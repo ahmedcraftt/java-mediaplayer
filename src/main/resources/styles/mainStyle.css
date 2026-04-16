@@ -1,0 +1,107 @@
+/* =========================
+   ROOT (overall background)
+========================= */
+.root {
+    -fx-background-color: #1a1410; /* deep coffee black */
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-text-fill: #e8d8c3;
+}
+
+/* =========================
+   SIDEBAR (left menu)
+========================= */
+#media, #utils {
+    -fx-background-color: #2a1f1a; /* moka body */
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+}
+
+/* Sidebar buttons */
+.button {
+    -fx-background-color: #3a2a22;
+    -fx-text-fill: #f2e6d9;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #5a3d2e; /* warm hover */
+}
+
+.button:pressed {
+    -fx-background-color: #7a4f3a;
+}
+
+/* =========================
+   CONTROL BAR (bottom)
+========================= */
+.hbox {
+    -fx-background-color: #221a16;
+}
+
+/* Play / main control buttons feel more important */
+.button:focused {
+    -fx-border-color: #c89b6d;
+    -fx-border-width: 1;
+}
+
+/* =========================
+   SLIDERS (track + volume)
+========================= */
+.slider .track {
+    -fx-background-color: #3a2a22;
+}
+
+.slider .thumb {
+    -fx-background-color: #c89b6d; /* coffee gold */
+    -fx-background-radius: 50%;
+}
+
+/* progress slider (track) */
+#trackSlider .track {
+    -fx-background-color: #2f221c;
+}
+
+#trackSlider .thumb {
+    -fx-background-color: #d2a679;
+}
+
+/* =========================
+   CONTENT AREA (center)
+========================= */
+#contentArea {
+    -fx-background-color: #15100d;
+}
+
+/* =========================
+   SPECIAL BUTTON STATES
+========================= */
+
+/* Play button = accent */
+#btnPlay {
+    -fx-background-color: #c89b6d;
+    -fx-text-fill: #1a1410;
+    -fx-font-weight: bold;
+}
+
+#btnPlay:hover {
+    -fx-background-color: #d6ad7c;
+}
+
+/* Favorite button */
+#btnFavorite {
+    -fx-background-color: transparent;
+    -fx-text-fill: #c89b6d;
+}
+
+#btnFavorite:hover {
+    -fx-text-fill: #f2e6d9;
+}
+
+/* =========================
+   SEPARATORS (optional feel)
+========================= */
+.separator {
+    -fx-background-color: #3a2a22;
+}
