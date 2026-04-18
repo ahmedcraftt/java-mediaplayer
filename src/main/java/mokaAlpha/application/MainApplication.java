@@ -12,7 +12,7 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/mainView.fxml"));
-        Scene scene = new Scene(loader.load(), 1000, 650);
+        Scene scene = new Scene(loader.load(), 1000, 700);
         MainViewController controller = loader.getController();
 
         stage.setTitle("Moka Player ☕");

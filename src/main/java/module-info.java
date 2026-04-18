@@ -10,6 +10,7 @@ module org.example.moka_music_player {
 
     requires jaudiotagger;
     requires annotations;
+    requires com.google.gson;
 
     // Export packages that need to be accessed by other modules or the JVM
     exports mokaAlpha.application;

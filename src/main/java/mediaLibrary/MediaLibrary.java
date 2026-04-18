@@ -33,7 +33,7 @@ public class MediaLibrary {
         tracks.add(track);
     }
 
-    public List<Track> getAllTracks() {
+    public List<Track> getTracks() {
         return Collections.unmodifiableList(tracks);
     }
 

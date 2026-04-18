@@ -6,9 +6,7 @@ public class Podcast extends Track {
     private String host;
 
 
-    public Podcast() {
-        setType(MediaType.PODCAST);
-    }
+    public Podcast() {}
 
     public String getChannel() {
         return channel;

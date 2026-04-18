@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainViewController {
+    @FXML private Button btnTracks;
     @FXML private Button btnSongs ;
     @FXML private Button btnBooks ;
     @FXML private Button btnPodcasts ;
@@ -26,6 +27,9 @@ public class MainViewController {
     @FXML private Button btnNext ;
     @FXML private Button btnPrev ;
     @FXML private Button btnPlaylist ;
+    @FXML private Button btnCurrentTrack ;
+    @FXML private Button btnQueue ;
+    @FXML private Button btnRepeatAndStop ;
     @FXML private AnchorPane contentArea ;
 
     private final MediaLibrary library = new MediaLibrary();
@@ -47,6 +51,8 @@ public class MainViewController {
         btnPlaylist.setDisable(true);
 
         Task<Void> task = getVoidTask();
+        btnTracks.setOnAction(e ->
+                switchView(new ArrayList<>(library.getTracks()),ViewMode.TRACKS));
 
         btnSongs.setOnAction(e ->
                 switchView(new ArrayList<>(library.getSongs()), ViewMode.SONGS));
@@ -75,6 +81,8 @@ public class MainViewController {
         };
 
         task.setOnSucceeded(e -> {
+
+            btnTracks.setDisable(false);
             btnSongs.setDisable(false);
             btnBooks.setDisable(false);
             btnPodcasts.setDisable(false);

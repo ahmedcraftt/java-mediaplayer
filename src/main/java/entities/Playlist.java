@@ -11,6 +11,7 @@ public class Playlist {
     private boolean favorite;
 
     public Playlist() {}
+
     public Playlist(String title, boolean favorite) {
         this.title = title;
         this.favorite = favorite;

@@ -15,10 +15,11 @@
       <URL value="@styles/mainStyle.css" />
    </stylesheets>
    <left>
-      <VBox spacing="15.0" BorderPane.alignment="CENTER">
+      <VBox alignment="CENTER" spacing="15.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox id="media" spacing="10.0">
+            <VBox id="media" fx:id="vbMedia" spacing="10.0">
                <children>
+                  <Button fx:id="btnTracks" mnemonicParsing="false" text="Tracks" />
                   <Button fx:id="btnSongs" mnemonicParsing="false" text="Songs" />
                   <Button fx:id="btnBooks" mnemonicParsing="false" text="Books" />
                   <Button fx:id="btnPodcasts" mnemonicParsing="false" text="Podcasts" />
@@ -31,7 +32,7 @@
                   <Insets top="5.0" />
                </padding>
             </VBox>
-            <VBox id="utils" spacing="10.0">
+            <VBox id="utils" fx:id="vbUtils" spacing="10.0">
                <children>
                   <Button fx:id="btnLocalMedia" mnemonicParsing="false" text="Local media" />
                   <Button fx:id="btnSettings" mnemonicParsing="false" text="Settings" />
@@ -44,12 +45,15 @@
             </VBox>
          </children>
          <padding>
-            <Insets top="10.0" />
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
       </VBox>
    </left>
    <center>
-      <AnchorPane fx:id="contentArea" BorderPane.alignment="CENTER" />
+      <AnchorPane fx:id="contentArea" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding></AnchorPane>
    </center>
    <bottom>
       <VBox alignment="CENTER" spacing="8.0" BorderPane.alignment="CENTER">
@@ -62,7 +66,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Button fx:id="btnSpeed" text="⚡" />
-                        <Button fx:id="btnEqualizer" text="🎚️" />
+                        <Button fx:id="btnEqualizer" text="Equlizer" />
                      </children>
                   </HBox>
 
@@ -99,4 +103,28 @@
          </padding>
       </VBox>
    </bottom>
+   <right>
+      <VBox alignment="CENTER" BorderPane.alignment="CENTER">
+         <children>
+            <VBox id="controls" fx:id="vbControls" alignment="CENTER" spacing="20.0">
+               <children>
+                  <Button fx:id="btnRepeatAndStop" mnemonicParsing="false" text="repeat" />
+                  <Button fx:id="btnQueue" mnemonicParsing="false" text="Queue" />
+                  <Button fx:id="btnCurrentTrack" mnemonicParsing="false" text="Track" />
+                  <Button fx:id="btnLyrics" mnemonicParsing="false" text="Lyrics" />
+                  <Button mnemonicParsing="false" text="Timer" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets left="5.0" right="5.0" />
+               </padding>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
+   </right>
 </BorderPane>

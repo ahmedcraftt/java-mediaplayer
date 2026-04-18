@@ -4,11 +4,10 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 
 public abstract class Track {
-   private MediaType type;
+   private LocalDate dateCreated;
+   private LocalDate dateAdded;
+   private LocalDate dateModified;
    protected String genre;
-   protected LocalDate dateCreated;
-   protected LocalDate dateAdded;
-   protected LocalDate dateModified;
    protected Path filePath;
    protected String title;
    protected boolean favorite;
@@ -84,14 +83,6 @@ public abstract class Track {
 
     public void setDateModified(LocalDate dateModified) {
         this.dateModified = dateModified;
-    }
-
-    public MediaType getType() {
-        return type;
-    }
-
-    public void setType(MediaType type) {
-        this.type = type;
     }
 
     public byte[] getCoverArt() {

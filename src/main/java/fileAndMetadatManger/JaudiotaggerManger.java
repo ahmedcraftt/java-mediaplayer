@@ -25,6 +25,7 @@ public class JaudiotaggerManger implements MetaDataManger {
             File file = new File(track.getFilePath().toUri());
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTagOrCreateAndSetDefault();
+
             safeSet(tag,FieldKey.TITLE, track.getTitle());
             safeSet(tag,FieldKey.GENRE,track.getGenre());
             safeSet(tag,FieldKey.YEAR,track.getYear());
@@ -73,8 +74,14 @@ public class JaudiotaggerManger implements MetaDataManger {
                 track.setYear(tag.getFirst(FieldKey.YEAR));
                 track.setDurationInSeconds(header.getTrackLength());
 
-                Integer br = Math.toIntExact(header.getBitRateAsNumber());
-                track.setBitrate(br != null ? br.longValue() : 0L);
+                Integer br = null;
+                try {
+                    br = Math.toIntExact(header.getBitRateAsNumber());
+                } catch (Exception ignored) {}
+
+                if (br != null) {
+                    track.setBitrate(br);
+                }
 
                 Integer sr = header.getSampleRateAsNumber();
                 track.setSampleRate(sr != null ? sr : 0);

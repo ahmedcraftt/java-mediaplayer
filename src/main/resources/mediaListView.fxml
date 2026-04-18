@@ -21,14 +21,14 @@
                   <Button fx:id="btnListPlay" text="▶" />
                   <TextField fx:id="searchBar" promptText="Search" HBox.hgrow="ALWAYS" />
                   <Button fx:id="btnAddDirectory" mnemonicParsing="false" text="+" />
-                  <Button fx:id="btnSort" text="Sort" />
+                  <Button fx:id="btnSort" text="Sort by" />
                   <Button fx:id="btnRefresh" text="Refresh" />
                </children>
                <padding>
                   <Insets bottom="5.0" top="10.0" />
                </padding>
             </HBox>
-      
+
             <ListView fx:id="listView" VBox.vgrow="ALWAYS">
                <padding>
                   <Insets top="5.0" />

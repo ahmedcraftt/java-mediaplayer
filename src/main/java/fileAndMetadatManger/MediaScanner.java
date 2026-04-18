@@ -94,18 +94,11 @@ public class MediaScanner {
         manger.readMetadata(tempTrack);
 
         Track finalTrack;
-        if (tempTrack.getType() != null) {
-            finalTrack = switch (tempTrack.getType()) {
-                case PODCAST -> new Podcast();
-                case AUDIOBOOK -> new AudioBook();
-                default -> new Song();
-            };
-        } else {
-            String fileName = path.getFileName().toString().toLowerCase();
-            if (fileName.contains("podcast")||fileName.contains("episode")) finalTrack = new Podcast();
-            else if (fileName.contains("audiobook") || fileName.contains("book")) finalTrack = new AudioBook();
-            else finalTrack = new Song();
-        }
+
+        String fileName = path.getFileName().toString().toLowerCase();
+        if (fileName.contains("podcast")||fileName.contains("episode")) finalTrack = new Podcast();
+        else if (fileName.contains("audiobook") || fileName.contains("book")) finalTrack = new AudioBook();
+        else finalTrack = new Song();
 
         finalTrack.setFilePath(path);
         finalTrack.setDateAdded(java.time.LocalDate.now());

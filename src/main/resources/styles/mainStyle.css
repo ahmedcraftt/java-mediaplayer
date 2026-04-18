@@ -1,13 +1,23 @@
 .root {
-    -fx-background-color: #1a1410; /* deep coffee black */
-    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-color: linear-gradient(
+            to bottom right,
+            #1a1410,
+            #15100d
+    );
+    -fx-font-family: "Segoe UI", "Helvetica Neue", sans-serif;
     -fx-text-fill: #e8d8c3;
 }
 
-#media, #utils {
-    -fx-background-color: #2a1f1a; /* moka body */
+#media, #utils, #controls {
+    -fx-background-color: #2a1f1a;
     -fx-background-radius: 10;
     -fx-padding: 10;
+    -fx-border-color: #3a2a22;
+    -fx-border-radius: 10;
+}
+
+#media, #utils, #controls, .list-view {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 14, 0.2, 0, 4);
 }
 
 .button {
@@ -16,14 +26,18 @@
     -fx-background-radius: 8;
     -fx-padding: 8 12;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0.2, 0, 2);
 }
 
 .button:hover {
-    -fx-background-color: #5a3d2e; /* warm hover */
+    -fx-background-color: #5a3d2e;
+    -fx-effect: dropshadow(gaussian, rgba(200,155,109,0.15), 10, 0.2, 0, 2);
 }
 
 .button:pressed {
     -fx-background-color: #7a4f3a;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
 }
 
 .hbox {
@@ -35,16 +49,34 @@
     -fx-border-width: 1;
 }
 
+.button:focused,
+.text-field:focused,
+.slider:focused {
+    -fx-effect: dropshadow(gaussian, rgba(200,155,109,0.25), 12, 0.3, 0, 0);
+}
+
 .slider .track {
-    -fx-background-color: #3a2a22;
+    -fx-background-color: #2f221c;
+    -fx-background-radius: 5;
 }
 
 .slider .thumb {
-    -fx-background-color: #c89b6d; /* coffee gold */
+    -fx-background-color: #c89b6d;
     -fx-background-radius: 50%;
+    -fx-pref-width: 12;
+    -fx-pref-height: 12;
 }
+
 .label {
+    -fx-letter-spacing: 0.2px;
     -fx-text-fill: #f2e6d9;
+    -fx-font-size: 13px;
+    -fx-opacity: 0.95;
+}
+
+#currentTrack {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
 }
 
 #trackSlider .track {
@@ -56,13 +88,15 @@
 }
 
 #contentArea {
-    -fx-background-color: #15100d;
+    -fx-background-color:
+            radial-gradient(center 30% 30%, radius 80%, #1a1410, #120e0b);
 }
 
 #btnPlay {
     -fx-background-color: #c89b6d;
     -fx-text-fill: #1a1410;
     -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(200,155,109,0.4), 10, 0.3, 0, 0);
 }
 
 #btnPlay:hover {
@@ -86,14 +120,13 @@
     -fx-background-color: #3a2a22;
     -fx-text-fill: #f2e6d9;
     -fx-padding: 8 12;
-    -fx-cursor: pencile;
+    -fx-cursor: text;
 }
 .list-view {
-    -fx-background-color: #1a1410; /* Match root background */
-    -fx-background-insets: 0;
-    -fx-padding: 5;
+    -fx-background-color: #1a1410;
+    -fx-background-radius: 10;
     -fx-border-color: #3a2a22;
-    -fx-border-width: 1;
+    -fx-border-radius: 10;
 }
 
 .list-cell {
@@ -101,6 +134,8 @@
     -fx-text-fill: #e8d8c3; /* Creamy text */
     -fx-padding: 8 12;
     -fx-font-size: 13px;
+    -fx-border-color: transparent transparent #2a1f1a transparent;
+    -fx-border-width: 0 0 1 0;
 }
 
 .list-cell:hover {
@@ -109,12 +144,11 @@
 }
 
 .list-cell:filled:selected {
-    -fx-background-color: #c89b6d; /* Coffee Gold */
-    -fx-text-fill: #1a1410;       /* Dark text for contrast */
-}
-
-.list-view:focused > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected {
-    -fx-background-color: #c89b6d;
+    -fx-background-color: linear-gradient(
+            to right,
+            #c89b6d,
+            #b8895f
+    );
 }
 
 .list-cell:empty {

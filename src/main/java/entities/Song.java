@@ -5,9 +5,7 @@ public class Song extends Track{
    private String album;
    private String lyrics;
 
-    public Song() {
-        setType(MediaType.SONG);
-    }
+    public Song() {}
 
     public String getArtist() {
         return artist;
