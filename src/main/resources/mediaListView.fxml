@@ -9,34 +9,23 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mokaAlpha.controllers.PlaylistViewController">
+<AnchorPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mokaAlpha.controllers.MediaListViewController">
    <stylesheets>
       <URL value="@styles/mainStyle.css" />
    </stylesheets>
-
    <children>
-      <VBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-      
             <HBox spacing="10.0">
                <children>
+                  <Button fx:id="btnListPlay" text="▶" />
                   <TextField fx:id="searchBar" promptText="Search" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="btnAddDirectory" mnemonicParsing="false" text="+" />
                   <Button fx:id="btnSort" text="Sort" />
-                  <Button fx:id="btnAdd" text="+" />
+                  <Button fx:id="btnRefresh" text="Refresh" />
                </children>
                <padding>
-                  <Insets top="10.0" />
-               </padding>
-            </HBox>
-            <HBox spacing="10.0">
-               <children>
-                  <Button mnemonicParsing="false" text="Favorites" />
-                  <Button mnemonicParsing="false" text="Recently added" />
-                  <Button mnemonicParsing="false" text="Most played" />
-                  <Button mnemonicParsing="false" text="Recently played" />
-               </children>
-               <padding>
-                  <Insets top="5.0" />
+                  <Insets bottom="5.0" top="10.0" />
                </padding>
             </HBox>
       
@@ -47,6 +36,5 @@
             </ListView>
          </children>
       </VBox>
-
    </children>
 </AnchorPane>

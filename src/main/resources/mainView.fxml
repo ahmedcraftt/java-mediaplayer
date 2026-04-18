@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mokaAlpha.controllers.MainViewController">
    <stylesheets>
       <URL value="@styles/mainStyle.css" />
    </stylesheets>
@@ -62,7 +62,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Button fx:id="btnSpeed" text="⚡" />
-                        <Button fx:id="btnEqualizer" text="🎚" />
+                        <Button fx:id="btnEqualizer" text="🎚️" />
                      </children>
                   </HBox>
 

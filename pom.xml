@@ -8,6 +8,13 @@
     <artifactId>moka_music_player</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>MokaAlpha</name>
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -15,13 +22,14 @@
     </properties>
 
     <dependencies>
-
-        <!-- Source: https://mvnrepository.com/artifact/org/jaudiotagger -->
         <dependency>
-            <groupId>org</groupId>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>5.14.0</version> </dependency>
+        <dependency>
+            <groupId>com.github.RouHim</groupId>
             <artifactId>jaudiotagger</artifactId>
-            <version>2.0.3</version>
-            <scope>compile</scope>
+            <version>2.0.19</version>
         </dependency>
         <dependency>
             <groupId>uk.co.caprica</groupId>

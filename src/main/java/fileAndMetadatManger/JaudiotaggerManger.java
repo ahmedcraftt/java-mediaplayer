@@ -1,4 +1,4 @@
-package fileManger;
+package fileAndMetadatManger;
 
 import entities.AudioBook;
 import entities.Podcast;
@@ -10,7 +10,6 @@ import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
-import org.jaudiotagger.tag.datatype.Artwork;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -20,10 +19,10 @@ import java.nio.file.attribute.FileTime;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
-public class MetaData {
-    public static void writeMetaData(Track track){
+public class JaudiotaggerManger implements MetaDataManger {
+    public void writeMetaData(Track track){
         try {
-            File file = new File(track.getFilePath());
+            File file = new File(track.getFilePath().toUri());
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTagOrCreateAndSetDefault();
             safeSet(tag,FieldKey.TITLE, track.getTitle());
@@ -51,12 +50,12 @@ public class MetaData {
             e.printStackTrace();
         }
     }
-    public static void readMetadata(Track track) {
+    public void readMetadata(Track track) {
 
         try {
 
-            File file = new File(track.getFilePath());
-            Path path = Path.of(track.getFilePath());
+            File file = new File(track.getFilePath().toUri());
+            Path path = Path.of(track.getFilePath().toUri());
             BasicFileAttributes attributes = Files.readAttributes(path, BasicFileAttributes.class);
 
             AudioFile audioFile = AudioFileIO.read(file);
@@ -73,8 +72,14 @@ public class MetaData {
                 track.setGenre(tag.getFirst(FieldKey.GENRE));
                 track.setYear(tag.getFirst(FieldKey.YEAR));
                 track.setDurationInSeconds(header.getTrackLength());
-                track.setBitrate(header.getBitRateAsNumber());
-                Artwork artwork = tag.getFirstArtwork();
+
+                Integer br = Math.toIntExact(header.getBitRateAsNumber());
+                track.setBitrate(br != null ? br.longValue() : 0L);
+
+                Integer sr = header.getSampleRateAsNumber();
+                track.setSampleRate(sr != null ? sr : 0);
+
+                org.jaudiotagger.tag.images.Artwork artwork = tag.getFirstArtwork();
                 if (artwork != null && artwork.getBinaryData() != null) {
                     track.setCoverArt(artwork.getBinaryData());
                 }

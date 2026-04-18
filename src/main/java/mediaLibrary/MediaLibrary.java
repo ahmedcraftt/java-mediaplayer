@@ -1,8 +1,9 @@
 package mediaLibrary;
 
 import entities.*;
-import fileManger.MediaScanner;
+import fileAndMetadatManger.MediaScanner;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -12,18 +13,18 @@ public class MediaLibrary {
     private final List<Track> tracks = new ArrayList<>();
     private final MediaScanner scanner = new MediaScanner();
 
-    public void loadFromDirectory(String path) {
+    public void loadFromDirectory(Path path) {
         scanner.scanDirectory(path);
 
         for (Track track : scanner.getTracks()) {
-            String filePath = track.getFilePath();
+            String filePath = track.getFilePath().toString();
 
             if (loadedPaths.add(filePath)) {
                 tracks.add(track);
             }
         }
     }
-    // Load tracks into library
+
     public void addAll(Collection<Track> newTracks) {
         tracks.addAll(newTracks);
     }
@@ -35,26 +36,28 @@ public class MediaLibrary {
     public List<Track> getAllTracks() {
         return Collections.unmodifiableList(tracks);
     }
-    public List<Song> getSongs() {
+
+    public List<Track> getSongs() {
         return tracks.stream()
                 .filter(t -> t instanceof Song)
                 .map(t -> (Song) t)
                 .collect(Collectors.toList());
     }
 
-    public List<Podcast> getPodcasts() {
+    public List<Track> getPodcasts() {
         return tracks.stream()
                 .filter(t -> t instanceof Podcast)
                 .map(t -> (Podcast) t)
                 .collect(Collectors.toList());
     }
 
-    public List<AudioBook> getAudiobooks() {
+    public List<Track> getAudiobooks() {
         return tracks.stream()
                 .filter(t -> t instanceof AudioBook)
                 .map(t -> (AudioBook) t)
                 .collect(Collectors.toList());
     }
+
     public List<Track> search(String query) {
         String q = query.toLowerCase();
 
@@ -68,6 +71,7 @@ public class MediaLibrary {
                 )
                 .collect(Collectors.toList());
     }
+
     public List<Track> sortByTitle() {
         return tracks.stream()
                 .sorted(Comparator.comparing(t -> safe(t.getTitle())))

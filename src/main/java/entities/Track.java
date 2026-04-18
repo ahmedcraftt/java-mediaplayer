@@ -1,5 +1,6 @@
 package entities;
 
+import java.nio.file.Path;
 import java.time.LocalDate;
 
 public abstract class Track {
@@ -8,7 +9,7 @@ public abstract class Track {
    protected LocalDate dateCreated;
    protected LocalDate dateAdded;
    protected LocalDate dateModified;
-   protected String filePath;
+   protected Path filePath;
    protected String title;
    protected boolean favorite;
    protected int durationInSeconds;
@@ -28,7 +29,6 @@ public abstract class Track {
     public String getYear() {
         return year;
     }
-
 
     public void setYear(String year) {
         this.year = year;
@@ -102,14 +102,6 @@ public abstract class Track {
         this.coverArt = coverArt;
     }
 
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
     public long getFileSize() {
         return fileSize;
     }
@@ -140,5 +132,13 @@ public abstract class Track {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Path getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(Path filePath) {
+        this.filePath = filePath;
     }
 }

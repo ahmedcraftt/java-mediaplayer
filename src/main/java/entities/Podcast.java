@@ -10,7 +10,6 @@ public class Podcast extends Track {
         setType(MediaType.PODCAST);
     }
 
-    // Getters and setters
     public String getChannel() {
         return channel;
     }

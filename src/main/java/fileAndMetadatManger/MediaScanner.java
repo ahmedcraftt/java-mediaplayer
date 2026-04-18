@@ -1,4 +1,4 @@
-package fileManger;
+package fileAndMetadatManger;
 
 import entities.*;
 
@@ -15,15 +15,15 @@ public class MediaScanner {
     private final List<Track> tracks = Collections.synchronizedList(new ArrayList<>());
     private final List<Path> failedFiles = Collections.synchronizedList(new ArrayList<>());
     private final Set<String> loadedPaths = Collections.synchronizedSet(new HashSet<>());
+    private final MetaDataManger manger = new JaudiotaggerManger();
 
     private Consumer<Path> onFileScanned;
 
 
-    public void scanDirectory(String rootPath) {
-        Path root = Path.of(rootPath);
+    public void scanDirectory(Path root) {
 
         if (!Files.exists(root)) {
-            System.err.println("Path does not exist: " + rootPath);
+            System.err.println("Path does not exist: " + root);
             return;
         }
 
@@ -34,7 +34,7 @@ public class MediaScanner {
                     .forEach(this::processFile);
 
         } catch (IOException e) {
-            System.err.println("Failed to scan directory: " + rootPath);
+            System.err.println("Failed to scan directory: " + root);
             e.printStackTrace();
         }
     }
@@ -51,34 +51,25 @@ public class MediaScanner {
     }
 
     private void processFile(Path path) {
+        System.out.println("processing file: "+ path.getFileName());
         try {
             String absolutePath = path.toAbsolutePath().toString();
-
             if (loadedPaths.contains(absolutePath)) return;
 
             Track track = createTrackFromPath(path);
 
-            if (track == null) {
-                failedFiles.add(path);
-                return;
-            }
-
-            readMetaData(track);
-
             tracks.add(track);
             loadedPaths.add(absolutePath);
 
-            // GUI hook
             if (onFileScanned != null) {
                 onFileScanned.accept(path);
             }
-
         } catch (Exception e) {
             failedFiles.add(path);
-            System.err.println("Failed to read: " + path);
             e.printStackTrace();
         }
     }
+
 
     private boolean isAudioFile(Path path) {
         String name = path.getFileName().toString().toLowerCase();
@@ -91,35 +82,37 @@ public class MediaScanner {
 
     private void readMetaData (Track track){
         try {
-            MetaData.readMetadata(track);
+            manger.readMetadata(track);
         } catch (Exception e) {
-            failedFiles.add(Path.of(track.getFilePath()));
-            System.err.println("Metadata read failed: " + track.getFilePath());
+            failedFiles.add(Path.of(track.getFilePath().toUri()));
+            System.err.println("Metadata read failed: " + track.getFilePath().toString());
         }
     }
     private Track createTrackFromPath(Path path) {
-        Track track = new Song();
+        Track tempTrack = new Song();
+        tempTrack.setFilePath(path);
+        manger.readMetadata(tempTrack);
 
-        track.setFilePath(path.toString());
-        track.setDateAdded(java.time.LocalDate.now());
-        MetaData.readMetadata(track);
-
-        if (track.getType() != null) {
-            switch (track.getType()) {
-                case PODCAST -> track = new Podcast();
-                case AUDIOBOOK -> track = new AudioBook();
-                case SONG -> track = new Song();
-            }
+        Track finalTrack;
+        if (tempTrack.getType() != null) {
+            finalTrack = switch (tempTrack.getType()) {
+                case PODCAST -> new Podcast();
+                case AUDIOBOOK -> new AudioBook();
+                default -> new Song();
+            };
         } else {
-
-            String file = path.getFileName().toString().toLowerCase();
-            if (file.contains("podcast")) track = new Podcast();
-            else if (file.contains("audiobook") || file.contains("book")) track = new AudioBook();
+            String fileName = path.getFileName().toString().toLowerCase();
+            if (fileName.contains("podcast")||fileName.contains("episode")) finalTrack = new Podcast();
+            else if (fileName.contains("audiobook") || fileName.contains("book")) finalTrack = new AudioBook();
+            else finalTrack = new Song();
         }
 
-        track.setFilePath(path.toString());
-        track.setDateAdded(java.time.LocalDate.now());
+        finalTrack.setFilePath(path);
+        finalTrack.setDateAdded(java.time.LocalDate.now());
 
-        return track;
+        manger.readMetadata(finalTrack);
+
+        return finalTrack;
     }
+
 }

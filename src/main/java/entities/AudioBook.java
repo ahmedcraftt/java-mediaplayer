@@ -1,6 +1,7 @@
 package entities;
 
 public class AudioBook extends Track {
+
     private String author;
     private String narrator;
     private String series;
