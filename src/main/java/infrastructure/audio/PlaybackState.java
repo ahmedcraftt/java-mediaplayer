@@ -1,4 +1,4 @@
-package mediaPlaying;
+package infrastructure.audio;
 
 public enum PlaybackState {
     PLAYING,

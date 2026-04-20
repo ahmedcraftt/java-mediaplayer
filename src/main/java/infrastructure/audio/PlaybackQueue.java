@@ -1,4 +1,4 @@
-package mediaPlaying;
+package infrastructure.audio;
 
 import entities.Track;
 

@@ -6,7 +6,10 @@ public class Podcast extends Track {
     private String host;
 
 
-    public Podcast() {}
+    public Podcast(String fileName, int duration) {
+        super(fileName,duration);
+        setType(MediaType.PODCAST);
+    }
 
     public String getChannel() {
         return channel;
@@ -18,6 +21,10 @@ public class Podcast extends Track {
 
     public String getHost() {
         return host;
+    }
+
+    public String getArtist(){
+        return getHost();
     }
 
     public void setHost(String host) {

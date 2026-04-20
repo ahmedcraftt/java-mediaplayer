@@ -1,6 +1,5 @@
-package mediaPlaying;
+package config;
 
-import config.VlcConfig;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery;
 

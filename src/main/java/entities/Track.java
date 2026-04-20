@@ -1,15 +1,20 @@
 package entities;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.nio.file.Path;
 import java.time.LocalDate;
 
 public abstract class Track {
+
+   private MediaType type;
    private LocalDate dateCreated;
    private LocalDate dateAdded;
    private LocalDate dateModified;
    protected String genre;
    protected Path filePath;
    protected String title;
+   protected String fileName;
    protected boolean favorite;
    protected int durationInSeconds;
    protected byte[] coverArt;
@@ -19,7 +24,12 @@ public abstract class Track {
    protected int sampleRate;
    protected String description;
 
-    public Track(){}
+   protected Track() {}
+
+    protected Track(String fileName, int durationInSeconds) {
+        this.fileName=fileName;
+        this.durationInSeconds=durationInSeconds;
+    }
 
     public boolean isFavorite() {
         return favorite;
@@ -131,5 +141,25 @@ public abstract class Track {
 
     public void setFilePath(Path filePath) {
         this.filePath = filePath;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public MediaType getType() {
+        return type;
+    }
+
+    public void setType(MediaType type) {
+        this.type = type;
+    }
+
+    public @NotNull String getArtist() {
+      return "";
     }
 }

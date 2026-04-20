@@ -1,10 +1,12 @@
-package mokaAlpha.controllers;
+package ui.controllers;
 
+import application.PlayerService;
 import entities.Track;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import mediaPlaying.AudioPlayer;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -13,15 +15,14 @@ public class MediaListViewController {
     @FXML private ListView<Track> listView;
     @FXML private TextField searchBar;
     @FXML private Button btnListPlay;
-    @FXML private Button btnSort;
+    @FXML private MenuButton btnSort;
     @FXML private Button btnRefresh;
 
     private List<Track> currentData;
-    private AudioPlayer player;
-    private ViewMode currentMode;
+    private PlayerService playerService;
 
-    public void setAudioPlayer(AudioPlayer player) {
-        this.player = player;
+    public void setPlayerService(PlayerService playerService) {
+        this.playerService = playerService;
     }
 
     public void setData(List<Track> tracks) {
@@ -30,7 +31,6 @@ public class MediaListViewController {
     }
 
     public void setMode(ViewMode mode) {
-        this.currentMode = mode;
 
         btnListPlay.setText(
                 switch (mode) {
@@ -55,9 +55,35 @@ public class MediaListViewController {
         listView.setCellFactory(lv -> new MyListCell());
     }
 
-    public ViewMode getCurrentMode() {
-        return currentMode;
+    private void sort(SortByModes mode) {
+        List<Track> items = new ArrayList<>(listView.getItems());
+
+        switch (mode) {
+            case TITLE -> items.sort(Comparator.comparing(Track::getTitle, String.CASE_INSENSITIVE_ORDER));
+            case FILE_NAME -> items.sort(Comparator.comparing(t -> t.getFilePath().getFileName().toString()));
+            case ARTISTS -> items.sort(Comparator.comparing(Track::getArtist, String.CASE_INSENSITIVE_ORDER));
+            case DURATION -> items.sort(Comparator.comparingInt(Track::getDurationInSeconds));
+            case YEAR -> items.sort(Comparator.comparing(Track::getYear));
+            case DATE_ADDED -> items.sort(Comparator.comparing(Track::getDateAdded));
+            case DATE_MODIFIED -> items.sort(Comparator.comparing(t -> t.getFilePath().toFile().lastModified()));
+        }
+
+        listView.getItems().setAll(items);
     }
+
+    @FXML private void sortByTitle() { sort(SortByModes.TITLE); }
+
+    @FXML private void sortByFileName() { sort(SortByModes.FILE_NAME); }
+
+    @FXML private void sortByArtists() { sort(SortByModes.ARTISTS); }
+
+    @FXML private void sortByDuration() { sort(SortByModes.DURATION); }
+
+    @FXML private void sortByYear() { sort(SortByModes.YEAR); }
+
+    @FXML private void sortByDateAdded() { sort(SortByModes.DATE_ADDED); }
+
+    @FXML private void sortByDateModified() { sort(SortByModes.DATE_MODIFIED); }
 
     private static class MyListCell extends ListCell<Track> {
         @Override
@@ -95,26 +121,22 @@ public class MediaListViewController {
         btnListPlay.setOnAction(e -> {
             Track selected = listView.getSelectionModel().getSelectedItem();
 
-            if (selected != null && player != null) {
-                player.play(selected);
+            if (selected != null && playerService != null) {
+                playerService.play(selected);
             }
         });
     }
 
     private void setupSort() {
-        btnSort.setOnAction(e -> {
-            listView.getItems().setAll(
-                    listView.getItems().stream()
-                            .sorted(Comparator.comparing(t -> safe(t.getTitle())))
-                            .toList()
-            );
-        });
+        btnSort.setOnAction(e -> listView.getItems().setAll(
+                listView.getItems().stream()
+                        .sorted(Comparator.comparing(t -> safe(t.getTitle())))
+                        .toList()
+        ));
     }
 
     private void setupRefresh() {
-        btnRefresh.setOnAction(e -> {
-            listView.getItems().setAll(currentData);
-        });
+        btnRefresh.setOnAction(e -> listView.getItems().setAll(currentData));
     }
 
     private String safe(String s) {

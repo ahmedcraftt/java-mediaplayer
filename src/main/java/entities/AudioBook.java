@@ -7,7 +7,10 @@ public class AudioBook extends Track {
     private String series;
     private int chapterCount;
 
-    public AudioBook() {}
+    public AudioBook(String fileName, int duration) {
+        super(fileName,duration);
+        setType(MediaType.AUDIOBOOK);
+    }
 
     public String getAuthor() {
         return author;

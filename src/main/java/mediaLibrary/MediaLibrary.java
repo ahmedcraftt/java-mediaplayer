@@ -1,96 +1,83 @@
 package mediaLibrary;
 
-import entities.*;
-import fileAndMetadatManger.MediaScanner;
-
+import entities.Track;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class MediaLibrary {
 
-    private final Set<String> loadedPaths = new HashSet<>();
-    private final List<Track> tracks = new ArrayList<>();
-    private final MediaScanner scanner = new MediaScanner();
+    private final Map<String, Track> tracks = new HashMap<>();
 
-    public void loadFromDirectory(Path path) {
-        scanner.scanDirectory(path);
-
-        for (Track track : scanner.getTracks()) {
-            String filePath = track.getFilePath().toString();
-
-            if (loadedPaths.add(filePath)) {
-                tracks.add(track);
-            }
+    public void addAll(List<Track> newTracks) {
+        for (Track t : newTracks) {
+            tracks.putIfAbsent(t.getFilePath().toString(), t);
         }
     }
 
-    public void addAll(Collection<Track> newTracks) {
-        tracks.addAll(newTracks);
-    }
-
     public void addTrack(Track track) {
-        tracks.add(track);
+        tracks.putIfAbsent(track.getFilePath().toString(), track);
     }
 
     public List<Track> getTracks() {
-        return Collections.unmodifiableList(tracks);
+        return new ArrayList<>(tracks.values());
     }
 
+    public void removeTrack(Track track) {
+        tracks.remove(track.getFilePath().toString());
+    }
+
+    public void clear() {
+        tracks.clear();
+    }
+
+    // ===== QUERY LAYER =====
+
     public List<Track> getSongs() {
-        return tracks.stream()
-                .filter(t -> t instanceof Song)
-                .map(t -> (Song) t)
-                .collect(Collectors.toList());
+        return filterByType("SONG");
     }
 
     public List<Track> getPodcasts() {
-        return tracks.stream()
-                .filter(t -> t instanceof Podcast)
-                .map(t -> (Podcast) t)
-                .collect(Collectors.toList());
+        return filterByType("PODCAST");
     }
 
     public List<Track> getAudiobooks() {
-        return tracks.stream()
-                .filter(t -> t instanceof AudioBook)
-                .map(t -> (AudioBook) t)
+        return filterByType("AUDIOBOOK");
+    }
+
+    private List<Track> filterByType(String type) {
+        return tracks.values().stream()
+                .filter(t -> t.getType().name().equals(type))
                 .collect(Collectors.toList());
     }
 
     public List<Track> search(String query) {
         String q = query.toLowerCase();
 
-        return tracks.stream()
+        return tracks.values().stream()
                 .filter(t ->
                         safe(t.getTitle()).contains(q) ||
                                 safe(t.getGenre()).contains(q) ||
-                                (t instanceof Song s && safe(s.getArtist()).contains(q)) ||
-                                (t instanceof Podcast p && safe(p.getHost()).contains(q)) ||
-                                (t instanceof AudioBook a && safe(a.getAuthor()).contains(q))
+                                safe(t.getFileName()).contains(q)
                 )
                 .collect(Collectors.toList());
     }
 
     public List<Track> sortByTitle() {
-        return tracks.stream()
-                .sorted(Comparator.comparing(t -> safe(t.getTitle())))
-                .collect(Collectors.toList());
+        return sort(Comparator.comparing(t -> safe(t.getTitle())));
     }
 
     public List<Track> sortByDuration() {
-        return tracks.stream()
-                .sorted(Comparator.comparingLong(Track::getDurationInSeconds))
-                .collect(Collectors.toList());
+        return sort(Comparator.comparingInt(Track::getDurationInSeconds));
     }
-    public List<Track> getShuffled() {
-        List<Track> shuffled = new ArrayList<>(tracks);
-        Collections.shuffle(shuffled);
-        return shuffled;
+
+    private List<Track> sort(Comparator<Track> comparator) {
+        return tracks.values().stream()
+                .sorted(comparator)
+                .collect(Collectors.toList());
     }
 
     private String safe(String s) {
         return s == null ? "" : s.toLowerCase();
     }
-
 }

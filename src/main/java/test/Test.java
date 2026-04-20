@@ -1,11 +1,13 @@
 package test;
 
-import entities.Song;
 import entities.Track;
-import mediaPlaying.AudioPlayer;
-import mediaPlaying.PlaybackState;
-import mediaPlaying.RepeatMode;
-import mediaPlaying.VlcBootstrap;
+import infrastructure.media.JaudiotaggerManger;
+import infrastructure.media.MetaDataManger;
+import infrastructure.media.TrackFactory;
+import infrastructure.audio.AudioPlayer;
+import infrastructure.audio.PlaybackState;
+import infrastructure.audio.RepeatMode;
+import config.VlcBootstrap;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -14,12 +16,12 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Test {
+    static AudioPlayer player = new AudioPlayer();
+    static MetaDataManger manger = new JaudiotaggerManger();
 
     public static void main(String[] ignoredArgs) {
 
         VlcBootstrap.init();
-
-        AudioPlayer player = new AudioPlayer();
 
         // 🔹 Build playlist
         List<Track> playlist = new ArrayList<>();
@@ -116,7 +118,8 @@ public class Test {
     }
 
     private static Track makeTrack(String title) {
-        Track t = new Song();
+
+        Track t = TrackFactory.createTrack("test.opus", manger.getDuration(Path.of("/home/Ahmed/test/test.opus")));
         t.setTitle(title);
         t.setFilePath(Path.of("/home/Ahmed/test/test.opus"));
         return t;

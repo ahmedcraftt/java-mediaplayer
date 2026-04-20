@@ -1,4 +1,4 @@
-package fileAndMetadatManger;
+package infrastructure.media;
 
 import entities.AudioBook;
 import entities.Podcast;
@@ -8,10 +8,15 @@ import entities.Track;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -20,6 +25,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 
 public class JaudiotaggerManger implements MetaDataManger {
+
     public void writeMetaData(Track track){
         try {
             File file = new File(track.getFilePath().toUri());
@@ -36,7 +42,7 @@ public class JaudiotaggerManger implements MetaDataManger {
                 safeSet(tag,FieldKey.LYRICS,song.getLyrics());
             }
             if (track instanceof Podcast podcast){
-                safeSet(tag,FieldKey.ARTIST,podcast.getHost());
+                safeSet(tag,FieldKey.ARTIST,podcast.getArtist());
                 safeSet(tag,FieldKey.ALBUM,podcast.getChannel());
                 safeSet(tag,FieldKey.TRACK, String.valueOf(podcast.getEpisodeNumber()));
             }
@@ -51,6 +57,19 @@ public class JaudiotaggerManger implements MetaDataManger {
             e.printStackTrace();
         }
     }
+
+    public int getDuration(Path path) {
+        File file = new File(path.toUri());
+        AudioFile audioFile;
+        try {
+            audioFile = AudioFileIO.read(file);
+        } catch (CannotReadException | IOException | TagException | ReadOnlyFileException | InvalidAudioFrameException e) {
+            throw new RuntimeException(e);
+        }
+        AudioHeader header = audioFile.getAudioHeader();
+        return header.getTrackLength();
+    }
+
     public void readMetadata(Track track) {
 
         try {
@@ -83,8 +102,8 @@ public class JaudiotaggerManger implements MetaDataManger {
                     track.setBitrate(br);
                 }
 
-                Integer sr = header.getSampleRateAsNumber();
-                track.setSampleRate(sr != null ? sr : 0);
+                int sr = header.getSampleRateAsNumber();
+                track.setSampleRate(sr);
 
                 org.jaudiotagger.tag.images.Artwork artwork = tag.getFirstArtwork();
                 if (artwork != null && artwork.getBinaryData() != null) {
@@ -119,17 +138,20 @@ public class JaudiotaggerManger implements MetaDataManger {
         }
 
     }
-    private static LocalDate toLocalDate(FileTime fileTime){
+
+    private LocalDate toLocalDate(FileTime fileTime){
         return fileTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
-    private static int safeParseInt(String value) {
+
+    private int safeParseInt(String value) {
         try {
             return (value == null || value.isBlank()) ? 0 : Integer.parseInt(value);
         } catch (NumberFormatException e) {
             return 0;
         }
     }
-    private static void safeSet(Tag tag, FieldKey key, String value) throws Exception {
+
+    private void safeSet(Tag tag, FieldKey key, String value) throws Exception {
         if (value != null && !value.isBlank()) {
             tag.setField(key, value);
         }

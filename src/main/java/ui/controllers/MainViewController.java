@@ -1,17 +1,17 @@
-package mokaAlpha.controllers;
+package ui.controllers;
 
+import application.MediaService;
+import application.PlayerService;
 import entities.Track;
+
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import mediaLibrary.MediaLibrary;
-import mediaPlaying.AudioPlayer;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import org.jetbrains.annotations.NotNull;
-
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainViewController {
+
     @FXML private Button btnTracks;
     @FXML private Button btnSongs ;
     @FXML private Button btnBooks ;
@@ -32,14 +33,16 @@ public class MainViewController {
     @FXML private Button btnRepeatAndStop ;
     @FXML private AnchorPane contentArea ;
 
-    private final MediaLibrary library = new MediaLibrary();
-    private AudioPlayer player ;
+    private MediaService mediaService ;
+    private PlayerService playerService;
     private MediaListViewController controller;
 
-    private volatile boolean loaded = false;
+    public void setPlayerService(PlayerService playerService) {
+        this.playerService = playerService;
+    }
 
-    public void setPlayer(AudioPlayer player) {
-        this.player = player;
+    public void setMediaService(MediaService mediaService) {
+        this.mediaService = mediaService;
     }
 
     @FXML
@@ -52,16 +55,16 @@ public class MainViewController {
 
         Task<Void> task = getVoidTask();
         btnTracks.setOnAction(e ->
-                switchView(new ArrayList<>(library.getTracks()),ViewMode.TRACKS));
+                switchView(new ArrayList<>(mediaService.getTracks()),ViewMode.TRACKS));
 
         btnSongs.setOnAction(e ->
-                switchView(new ArrayList<>(library.getSongs()), ViewMode.SONGS));
+                switchView(new ArrayList<>(mediaService.getSongs()), ViewMode.SONGS));
 
         btnBooks.setOnAction(e ->
-                switchView(new ArrayList<>(library.getAudiobooks()), ViewMode.BOOKS));
+                switchView(new ArrayList<>(mediaService.getAudioBooks()), ViewMode.BOOKS));
 
         btnPodcasts.setOnAction(e ->
-                switchView(new ArrayList<>(library.getPodcasts()), ViewMode.PODCASTS));
+                switchView(new ArrayList<>(mediaService.getPodcasts()), ViewMode.PODCASTS));
 
         btnPlaylist.setOnAction(e -> loadPlaylistView());
 
@@ -75,25 +78,28 @@ public class MainViewController {
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() {
-                library.loadFromDirectory(Path.of("/home/Ahmed/test"));
+                mediaService.loadDirectory(Path.of("/home/Ahmed/test"));
                 return null;
             }
         };
 
         task.setOnSucceeded(e -> {
 
-            btnTracks.setDisable(false);
-            btnSongs.setDisable(false);
-            btnBooks.setDisable(false);
-            btnPodcasts.setDisable(false);
-            btnPlaylist.setDisable(false);
+            setButtonsEnabled(false);
 
             loadMediaView(
-                    new ArrayList<>(library.getSongs()),
+                    new ArrayList<>(mediaService.getSongs()),
                     ViewMode.SONGS
             );
         });
         return task;
+    }
+    private void setButtonsEnabled(boolean enabled) {
+        btnTracks.setDisable(enabled);
+        btnSongs.setDisable(enabled);
+        btnBooks.setDisable(enabled);
+        btnPodcasts.setDisable(enabled);
+        btnPlaylist.setDisable(enabled);
     }
 
     private void switchView(List<Track> tracks, ViewMode mode) {
@@ -113,8 +119,8 @@ public class MainViewController {
 
             controller = loader.getController();
 
-            if (player != null) {
-                controller.setAudioPlayer(player);
+            if (playerService != null) {
+                controller.setPlayerService(playerService);
             }
 
             controller.setData(tracks);
@@ -148,8 +154,8 @@ public class MainViewController {
 
             PlaylistViewController playlistController = loader.getController();
 
-            if (player != null) {
-                playlistController.setPlayer(player);
+            if (playerService != null) {
+                playlistController.setPlayerService(playerService);
             }
 
             contentArea.getChildren().setAll(view);

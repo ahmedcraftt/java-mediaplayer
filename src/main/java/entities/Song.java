@@ -5,8 +5,12 @@ public class Song extends Track{
    private String album;
    private String lyrics;
 
-    public Song() {}
+    public Song(String fileName, int duration) {
+        super(fileName,duration);
+        setType(MediaType.SONG);
+    }
 
+    @Override
     public String getArtist() {
         return artist;
     }

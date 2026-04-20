@@ -13,13 +13,16 @@ module org.example.moka_music_player {
     requires com.google.gson;
 
     // Export packages that need to be accessed by other modules or the JVM
-    exports mokaAlpha.application;
+    exports ui.main;
     exports test;
-    exports mediaPlaying;
+    exports infrastructure.audio;
     exports config;
 
     // Open packages for reflection (JavaFX and vlcj factory often need this)
-    opens mokaAlpha.application to javafx.fxml;
-    opens mokaAlpha.controllers to javafx.fxml;
+    opens ui.main to javafx.fxml;
+    opens ui.controllers to javafx.fxml;
     opens entities to javafx.base;
+    exports infrastructure.media;
+    opens infrastructure.media to javafx.base;
+    opens infrastructure.audio to javafx.base;
 }
