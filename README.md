@@ -62,6 +62,45 @@ Media scanning is working
 UI is connected to services
 Architecture is under active refinement
 
+HOW TO CLONE AND USE
+Clone the repository
+Open your terminal and run:
+git clone https://github.com/your-username/moka-player.git⁠�
+Then navigate into the project:
+cd moka-player
+Set up requirements
+Make sure you have the following installed:
+Java 17 or higher
+JavaFX SDK
+VLC Media Player (libVLC is required for playback)
+Important: VLC must be properly installed so that VLCJ can detect it.
+Configure JavaFX
+If you are running manually (without a build tool), you need to add JavaFX VM options:
+Example:
+--module-path /path/to/javafx/lib --add-modules javafx.controls,javafx.fxml
+(Replace /path/to/javafx with your actual JavaFX SDK path)
+Run the application
+Run the main class:
+ui.main.MainApplication
+From your IDE (recommended):
+Open the project
+Set VM options (JavaFX path)
+Run MainApplication
+First launch
+The app will scan a default directory (currently hardcoded)
+You may want to change this path in the code:
+mediaService.loadDirectory(Path.of("your/music/folder"))
+Using the app
+Use the sidebar to switch between: Tracks / Songs / Podcasts / Books
+Use search to filter results
+Select a track and press Play
+Use bottom controls for playback
+KNOWN LIMITATIONS
+Directory path is currently hardcoded
+Playlist system is basic
+UI updates are not fully reactive yet
+Some metadata may not load correctly for all files
+
 FUTURE IMPROVEMENTS
 Reactive media library updates (live UI updates)
 Persistent playlists (save/load from disk)
