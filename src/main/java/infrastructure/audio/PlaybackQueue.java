@@ -32,6 +32,7 @@ public class PlaybackQueue {
         trackQueue.clear();
         history.clear();
         originalOrder.clear();
+        trackSet.clear();
         currentTrack = null;
     }
 
@@ -78,7 +79,7 @@ public class PlaybackQueue {
         trackQueue.addAll(tempList);
     }
 
-    public boolean remove(Track track) {
+    public void remove(Track track) {
         boolean removed = trackQueue.remove(track);
         originalOrder.remove(track);
         history.remove(track);
@@ -88,7 +89,6 @@ public class PlaybackQueue {
             currentTrack = null;
         }
 
-        return removed;
     }
 
     public Track getCurrentTrack() {
@@ -106,8 +106,12 @@ public class PlaybackQueue {
         return shuffle;
     }
 
-    public List<Track> getHistory() {
-        return new ArrayList<>(history);
+    public Deque<Track> getHistory() {
+        return history;
+    }
+
+    public void removeFromQueue(Track t){
+        trackQueue.remove(t);
     }
 
     public void setLoopQueue(boolean enable) {
@@ -138,6 +142,10 @@ public class PlaybackQueue {
         if (oldCurrent != null) {
             currentTrack = oldCurrent;
         }
+    }
+
+    public Track peak(){
+       return trackQueue.peekFirst();
     }
 
 }

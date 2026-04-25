@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class PlaylistStorage {
 
-    private static final MetaDataManger manger = new JaudiotaggerManger();
+    private static final MetaDataManager manger = new JaudiotaggerManager();
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static Path base = Path.of(System.getProperty("user.home"), ".moka_music_player", "playlists");
 

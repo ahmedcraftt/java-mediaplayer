@@ -11,18 +11,21 @@ module org.example.moka_music_player {
     requires jaudiotagger;
     requires annotations;
     requires com.google.gson;
+    requires AhmedUtilsV2;
 
     // Export packages that need to be accessed by other modules or the JVM
-    exports ui.main;
+    exports gui.main;
     exports test;
     exports infrastructure.audio;
     exports config;
+    exports entities;
 
     // Open packages for reflection (JavaFX and vlcj factory often need this)
-    opens ui.main to javafx.fxml;
-    opens ui.controllers to javafx.fxml;
+    opens gui.main to javafx.fxml;
+    opens gui.controllers to javafx.fxml;
     opens entities to javafx.base;
     exports infrastructure.media;
     opens infrastructure.media to javafx.base;
     opens infrastructure.audio to javafx.base;
+    opens mediaLibrary to com.google.gson;
 }

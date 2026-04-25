@@ -1,8 +1,8 @@
 package test;
 
 import entities.Track;
-import infrastructure.media.JaudiotaggerManger;
-import infrastructure.media.MetaDataManger;
+import infrastructure.media.JaudiotaggerManager;
+import infrastructure.media.MetaDataManager;
 import infrastructure.media.TrackFactory;
 import infrastructure.audio.AudioPlayer;
 import infrastructure.audio.PlaybackState;
@@ -17,7 +17,7 @@ import java.util.Scanner;
 
 public class Test {
     static AudioPlayer player = new AudioPlayer();
-    static MetaDataManger manger = new JaudiotaggerManger();
+    static MetaDataManager manger = new JaudiotaggerManager();
 
     public static void main(String[] ignoredArgs) {
 

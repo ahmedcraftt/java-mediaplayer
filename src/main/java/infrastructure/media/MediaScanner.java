@@ -12,9 +12,9 @@ public class MediaScanner {
             "mp3", "flac", "wav", "m4a", "ogg","aac","opus","wma","alac"
     );
 
-    private final MetaDataManger metadata;
+    private final MetaDataManager metadata;
 
-    public MediaScanner(MetaDataManger metadata) {
+    public MediaScanner(MetaDataManager metadata) {
         this.metadata = metadata;
     }
 

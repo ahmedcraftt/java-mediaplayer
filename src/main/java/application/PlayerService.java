@@ -19,12 +19,6 @@ public class PlayerService {
         player.play(track);
     }
 
-    public void playQueue(List<Track> tracks) {
-        player.clearQueue();
-        player.enqueueAll(tracks);
-        player.playFromQueue();
-    }
-
     public void next() {
         player.playNext();
     }
@@ -53,4 +47,24 @@ public class PlayerService {
         return player.getState();
     }
 
+    public void previous() {
+        player.playPrev();
+    }
+
+    public void clearQueue(){
+        player.clearQueue();
+    }
+
+    public void loadLibrary(List<Track> tracks) {
+        clearQueue();
+        enqueueAll(tracks);
+    }
+
+    public void enqueueAll(List<Track> tracks) {
+        player.enqueueAll(tracks);
+    }
+
+    public Track getCurrentTrack(){
+        return player.getCurrentTrack();
+    }
 }
