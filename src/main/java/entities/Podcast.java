@@ -1,14 +1,19 @@
 package entities;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.nio.file.Path;
+
 public class Podcast extends Track {
     private int episodeNumber;
     private String channel;
     private String host;
 
 
-    public Podcast(String fileName, int duration) {
-        super(fileName,duration);
+    public Podcast(String fileName, int duration, Path filePath) {
+        super(fileName,duration,filePath);
         setType(MediaType.PODCAST);
+
     }
 
     public String getChannel() {
@@ -23,8 +28,9 @@ public class Podcast extends Track {
         return host;
     }
 
-    public String getArtist(){
-        return getHost();
+    @NotNull
+    public String getArtist() {
+        return host != null ? host : "Unknown";
     }
 
     public void setHost(String host) {

@@ -1,5 +1,7 @@
 package entities;
 
+import java.nio.file.Path;
+
 public class AudioBook extends Track {
 
     private String author;
@@ -7,8 +9,8 @@ public class AudioBook extends Track {
     private String series;
     private int chapterCount;
 
-    public AudioBook(String fileName, int duration) {
-        super(fileName,duration);
+    public AudioBook(String fileName, int duration, Path filePath) {
+        super(fileName,duration,filePath);
         setType(MediaType.AUDIOBOOK);
     }
 
@@ -22,6 +24,10 @@ public class AudioBook extends Track {
 
     public String getNarrator() {
         return narrator;
+    }
+
+    public String getArtist() {
+        return narrator != null ? narrator : "Unknown Host";
     }
 
     public void setNarrator(String narrator) {

@@ -58,18 +58,6 @@ public class JaudiotaggerManager implements MetaDataManager {
         }
     }
 
-    public int getDuration(Path path) {
-        File file = new File(path.toUri());
-        AudioFile audioFile;
-        try {
-            audioFile = AudioFileIO.read(file);
-        } catch (CannotReadException | IOException | TagException | ReadOnlyFileException | InvalidAudioFrameException e) {
-            throw new RuntimeException(e);
-        }
-        AudioHeader header = audioFile.getAudioHeader();
-        return header.getTrackLength();
-    }
-
     public void readMetadata(Track track) {
 
         try {
@@ -137,6 +125,41 @@ public class JaudiotaggerManager implements MetaDataManager {
             e.printStackTrace();
         }
 
+    }
+
+    public int getDuration(Path path) {
+        AudioFile audioFile = createAudioFile(path);
+        AudioHeader header = audioFile.getAudioHeader();
+        return header.getTrackLength();
+    }
+
+    public String getGenre(Path path){
+       AudioFile audioFile = createAudioFile(path);
+       Tag tag = audioFile.getTagOrCreateAndSetDefault();
+       return tag.getFirst(FieldKey.GENRE);
+    }
+
+    public String getTitle(Path path){
+        AudioFile audioFile = createAudioFile(path);
+        Tag tag = audioFile.getTagOrCreateAndSetDefault();
+        return tag.getFirst(FieldKey.TITLE);
+    }
+
+    public String getTrackNumber (Path path){
+        AudioFile audioFile = createAudioFile(path);
+        Tag tag = audioFile.getTagOrCreateAndSetDefault();
+        return tag.getFirst(FieldKey.TRACK);
+    }
+
+    private AudioFile createAudioFile(Path path){
+        File file = new File(path.toUri());
+        AudioFile audioFile;
+        try {
+            audioFile = AudioFileIO.read(file);
+            return audioFile;
+        } catch (CannotReadException | IOException | TagException | ReadOnlyFileException | InvalidAudioFrameException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private LocalDate toLocalDate(FileTime fileTime){

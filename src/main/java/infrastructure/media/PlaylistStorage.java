@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 
 public class PlaylistStorage {
 
-    private static final MetaDataManager manger = new JaudiotaggerManager();
+    private static final MetaDataManager metaData = new JaudiotaggerManager();
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private static Path base = Path.of(System.getProperty("user.home"), ".moka_music_player", "playlists");
+    private static final Path base = Path.of(System.getProperty("user.home"), ".moka_music_player", "playlists");
 
     public static void save(Playlist playlist) throws IOException {
 
@@ -41,7 +41,7 @@ public class PlaylistStorage {
         for (String pathStr : dto.trackPaths) {
             Path path = Path.of(pathStr);
             String filename = path.getFileName().toString();
-            Track t = TrackFactory.createTrack(filename,manger.getDuration(path));
+            Track t = TrackFactory.createTrack(path, metaData);
             t.setFilePath(path);
 
             playlist.addTrack(t);

@@ -1,11 +1,12 @@
 package ui.main;
 
+import application.LibraryService;
 import application.MediaService;
 import application.PlayerService;
 import infrastructure.audio.AudioPlayer;
-import infrastructure.media.JaudiotaggerManger;
+import infrastructure.media.JaudiotaggerManager;
 import infrastructure.media.MediaScanner;
-import infrastructure.media.MetaDataManger;
+import infrastructure.media.MetaDataManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,11 +20,12 @@ import java.io.IOException;
 
 public class MainApplication extends Application {
     private final AudioPlayer player = new AudioPlayer();
-    private final MetaDataManger metaDataManger = new JaudiotaggerManger();
+    private final MetaDataManager metaDataManger = new JaudiotaggerManager();
     private final MediaScanner scanner = new MediaScanner(metaDataManger);
     private final MediaLibrary library = new MediaLibrary();
+    private final LibraryService libraryService = new LibraryService();
     private final PlayerService playerService = new PlayerService(player);
-    private final MediaService mediaService = new MediaService(scanner,library);
+    private final MediaService mediaService = new MediaService(scanner,library,libraryService);
 
     @Override
     public void start(Stage stage) throws IOException {

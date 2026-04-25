@@ -26,10 +26,7 @@ public class MediaScanner {
             paths.filter(Files::isRegularFile)
                     .filter(this::isAudioFile)
                     .forEach(path -> {
-                        Track track = TrackFactory.createTrack(
-                                path.getFileName().toString(),
-                                metadata.getDuration(path)
-                        );
+                        Track track = TrackFactory.createTrack(path,metadata);
 
                         track.setFilePath(path);
                         metadata.readMetadata(track);

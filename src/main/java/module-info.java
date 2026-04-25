@@ -14,15 +14,15 @@ module org.example.moka_music_player {
     requires AhmedUtilsV2;
 
     // Export packages that need to be accessed by other modules or the JVM
-    exports gui.main;
+    exports ui.main;
     exports test;
     exports infrastructure.audio;
     exports config;
     exports entities;
 
     // Open packages for reflection (JavaFX and vlcj factory often need this)
-    opens gui.main to javafx.fxml;
-    opens gui.controllers to javafx.fxml;
+    opens ui.main to javafx.fxml;
+    opens ui.controllers to javafx.fxml;
     opens entities to javafx.base;
     exports infrastructure.media;
     opens infrastructure.media to javafx.base;

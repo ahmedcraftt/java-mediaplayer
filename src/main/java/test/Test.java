@@ -17,7 +17,7 @@ import java.util.Scanner;
 
 public class Test {
     static AudioPlayer player = new AudioPlayer();
-    static MetaDataManager manger = new JaudiotaggerManager();
+    static MetaDataManager metaData = new JaudiotaggerManager();
 
     public static void main(String[] ignoredArgs) {
 
@@ -118,10 +118,10 @@ public class Test {
     }
 
     private static Track makeTrack(String title) {
-
-        Track t = TrackFactory.createTrack("test.opus", manger.getDuration(Path.of("/home/Ahmed/test/test.opus")));
+        Path path = Path.of("/home/Ahmed/test/CG5 - FNAF SL SONG ▶ ＂I Can't Fix You＂ (Remix⧸Cover feat. Chi-chi) [SFM] ｜ CG5.m4a");
+        Track t = TrackFactory.createTrack(path, metaData);
         t.setTitle(title);
-        t.setFilePath(Path.of("/home/Ahmed/test/test.opus"));
+        t.setFilePath(path);
         return t;
     }
 

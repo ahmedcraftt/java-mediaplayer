@@ -14,7 +14,6 @@ import javafx.scene.layout.AnchorPane;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +30,9 @@ public class MainViewController {
     @FXML private Button btnCurrentTrack ;
     @FXML private Button btnQueue ;
     @FXML private Button btnRepeatAndStop ;
+    @FXML private Button btnArtists;
+    @FXML private Button btnGenres;
+
     @FXML private AnchorPane contentArea ;
 
     private MediaService mediaService ;
@@ -48,10 +50,7 @@ public class MainViewController {
     @FXML
     private void initialize() {
 
-        btnSongs.setDisable(true);
-        btnBooks.setDisable(true);
-        btnPodcasts.setDisable(true);
-        btnPlaylist.setDisable(true);
+        setButtonsEnabled(true);
 
         Task<Void> task = getVoidTask();
         btnTracks.setOnAction(e ->
@@ -68,6 +67,11 @@ public class MainViewController {
 
         btnPlaylist.setOnAction(e -> loadPlaylistView());
 
+        btnArtists.setOnAction(event -> loadCategoryView());
+
+        btnGenres.setOnAction(event -> loadCategoryView());
+
+
         Thread thread = new Thread(task);
         thread.setDaemon(true);
         thread.start();
@@ -78,7 +82,7 @@ public class MainViewController {
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() {
-                mediaService.loadDirectory(Path.of("/home/Ahmed/test"));
+                mediaService.loadActiveLibrary();
                 return null;
             }
         };
@@ -94,6 +98,7 @@ public class MainViewController {
         });
         return task;
     }
+
     private void setButtonsEnabled(boolean enabled) {
         btnTracks.setDisable(enabled);
         btnSongs.setDisable(enabled);
@@ -103,6 +108,7 @@ public class MainViewController {
     }
 
     private void switchView(List<Track> tracks, ViewMode mode) {
+        loadMediaView(tracks,mode);
         if (controller == null) {
             loadMediaView(tracks, mode);
             return;
@@ -111,27 +117,16 @@ public class MainViewController {
         controller.setData(tracks);
         controller.setMode(mode);
     }
+
     private void loadMediaView(List<Track> tracks, ViewMode mode) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/mediaListView.fxml"));
-
-            Parent view = loader.load();
+            FXMLLoader loader = loadView("/mediaListView.fxml");
 
             controller = loader.getController();
 
             if (playerService != null) {
                 controller.setPlayerService(playerService);
             }
-
-            controller.setData(tracks);
-            controller.setMode(mode);
-
-            contentArea.getChildren().setAll(view);
-
-            AnchorPane.setTopAnchor(view, 0.0);
-            AnchorPane.setBottomAnchor(view, 0.0);
-            AnchorPane.setLeftAnchor(view, 0.0);
-            AnchorPane.setRightAnchor(view, 0.0);
 
         } catch (IOException e) {
             System.err.println("CRITICAL: Could not find or load mediaListView.fxml");
@@ -142,15 +137,9 @@ public class MainViewController {
         }
     }
 
-
-
     private void loadPlaylistView() {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/playlistView.fxml")
-            );
-
-            Parent view = loader.load();
+            FXMLLoader loader = loadView("/playlistView.fxml");
 
             PlaylistViewController playlistController = loader.getController();
 
@@ -158,18 +147,47 @@ public class MainViewController {
                 playlistController.setPlayerService(playerService);
             }
 
-            contentArea.getChildren().setAll(view);
-
-            AnchorPane.setTopAnchor(view, 0.0);
-            AnchorPane.setBottomAnchor(view, 0.0);
-            AnchorPane.setLeftAnchor(view, 0.0);
-            AnchorPane.setRightAnchor(view, 0.0);
-
-            this.controller = null;
-
         } catch (IOException e) {
             System.err.println("Failed to load playlistView.fxml");
             e.printStackTrace();
+        } catch (IllegalStateException e) {
+            System.err.println("FXML Error: Check if fx:controller is set correctly in playlistView.fxml");
+            e.printStackTrace();
         }
+    }
+
+    private void loadCategoryView() {
+        try {
+            FXMLLoader loader = loadView("/categoryView.fxml");
+
+            CategoryViewController categoryViewController = loader.getController();
+
+            if (playerService != null) {
+                categoryViewController.setPlayerService(playerService);
+            }
+        } catch (IOException e) {
+            System.err.println("CRITICAL: Could not find or load categoryView.fxml");
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            System.err.println("FXML Error: Check if fx:controller is set correctly in categoryView.fxml");
+            e.printStackTrace();
+        }
+    }
+
+    private FXMLLoader loadView(String resource) throws IOException {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource(resource)
+        );
+
+        Parent view = loader.load();
+
+        contentArea.getChildren().setAll(view);
+
+        AnchorPane.setTopAnchor(view, 0.0);
+        AnchorPane.setBottomAnchor(view, 0.0);
+        AnchorPane.setLeftAnchor(view, 0.0);
+        AnchorPane.setRightAnchor(view, 0.0);
+
+        return loader;
     }
 }

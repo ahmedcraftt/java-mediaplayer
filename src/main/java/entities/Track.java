@@ -7,28 +7,28 @@ import java.time.LocalDate;
 
 public abstract class Track {
 
-   private MediaType type;
-   private LocalDate dateCreated;
-   private LocalDate dateAdded;
-   private LocalDate dateModified;
-   protected String genre;
-   protected Path filePath;
-   protected String title;
-   protected String fileName;
-   protected boolean favorite;
-   protected int durationInSeconds;
-   protected byte[] coverArt;
-   protected String year;
-   protected long fileSize;
-   protected long bitrate;
-   protected int sampleRate;
-   protected String description;
+    private MediaType type;
+    private LocalDate dateCreated;
+    private LocalDate dateModified;
+    private long fileSize;
+    protected Path filePath;
+    protected String fileName;
+    protected boolean favorite;
+    protected String genre;
+    protected String title;
+    protected int durationInSeconds;
+    protected byte[] coverArt;
+    protected String year;
+    protected long bitrate;
+    protected int sampleRate;
+    protected String description;
 
-   protected Track() {}
+    protected Track() {}
 
-    protected Track(String fileName, int durationInSeconds) {
+    protected Track(String fileName, int durationInSeconds, Path filePath) {
         this.fileName=fileName;
         this.durationInSeconds=durationInSeconds;
+        this.filePath = filePath;
     }
 
     public boolean isFavorite() {
@@ -77,14 +77,6 @@ public abstract class Track {
 
     public void setDateCreated(LocalDate dateCreated) {
         this.dateCreated = dateCreated;
-    }
-
-    public LocalDate getDateAdded() {
-        return dateAdded;
-    }
-
-    public void setDateAdded(LocalDate dateAdded) {
-        this.dateAdded = dateAdded;
     }
 
     public LocalDate getDateModified() {

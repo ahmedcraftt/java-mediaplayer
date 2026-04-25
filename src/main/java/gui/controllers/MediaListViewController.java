@@ -64,7 +64,7 @@ public class MediaListViewController {
             case ARTISTS -> items.sort(Comparator.comparing(Track::getArtist, String.CASE_INSENSITIVE_ORDER));
             case DURATION -> items.sort(Comparator.comparingInt(Track::getDurationInSeconds));
             case YEAR -> items.sort(Comparator.comparing(Track::getYear));
-            case DATE_ADDED -> items.sort(Comparator.comparing(Track::getDateAdded));
+            case DATE_ADDED -> items.sort(Comparator.comparing(Track::getDateCreated));
             case DATE_MODIFIED -> items.sort(Comparator.comparing(t -> t.getFilePath().toFile().lastModified()));
         }
 
