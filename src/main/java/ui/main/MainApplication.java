@@ -2,7 +2,6 @@ package ui.main;
 
 import application.LibraryService;
 import application.MediaService;
-import application.PlayerService;
 import infrastructure.audio.AudioPlayer;
 import infrastructure.media.JaudiotaggerManager;
 import infrastructure.media.MediaScanner;
@@ -24,7 +23,6 @@ public class MainApplication extends Application {
     private final MediaScanner scanner = new MediaScanner(metaDataManger);
     private final MediaLibrary library = new MediaLibrary();
     private final LibraryService libraryService = new LibraryService();
-    private final PlayerService playerService = new PlayerService(player);
     private final MediaService mediaService = new MediaService(scanner,library,libraryService);
 
     @Override
@@ -33,7 +31,7 @@ public class MainApplication extends Application {
         Parent root = loader.load();
         MainViewController controller = loader.getController();
         controller.setMediaService(mediaService);
-        controller.setPlayerService(playerService);
+        controller.setPlayer(player);
         Scene scene = new Scene(root,1000,700);
 
         stage.setTitle("Moka Player ☕");

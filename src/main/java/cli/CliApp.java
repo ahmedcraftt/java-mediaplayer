@@ -2,9 +2,10 @@ package cli;
 
 import application.LibraryService;
 import application.MediaService;
-import application.PlayerService;
 import com.ahmed.utils.InputUtils;
 import entities.Track;
+import infrastructure.audio.AudioPlayer;
+import infrastructure.audio.RepeatMode;
 import mediaLibrary.Library;
 
 import java.nio.file.Path;
@@ -13,12 +14,12 @@ import java.util.List;
 public class CliApp {
 
     private final MediaService mediaService;
-    private final PlayerService playerService;
+    private final AudioPlayer player;
     private final LibraryService libraryService;
 
-    public CliApp(MediaService mediaService, PlayerService playerService, LibraryService libraryService) {
+    public CliApp(MediaService mediaService, AudioPlayer player, LibraryService libraryService) {
         this.mediaService = mediaService;
-        this.playerService = playerService;
+        this.player = player;
         this.libraryService = libraryService;
     }
 
@@ -27,6 +28,8 @@ public class CliApp {
         initializeLibrary();
 
         loadLibrary();
+
+        player.setRepeatMode(RepeatMode.LOOP_CURRENT_ONE);
 
         System.out.println("🎵 Moka Player CLI");
         System.out.println("====================");
@@ -43,6 +46,7 @@ public class CliApp {
                 case 4 -> next();
                 case 5 -> previous();
                 case 6 -> stop();
+                case 7 -> setRepeatMode();
                 case 0 -> {
                     System.out.println("👋 Exiting...");
                     return;
@@ -52,25 +56,42 @@ public class CliApp {
         }
     }
 
+    private void setRepeatMode(){
+        printModes();
+        int option = InputUtils.readInt("Choose:");
+        switch (option){
+            case 1 -> player.setRepeatMode(RepeatMode.PLAY_ONE);
+            case 2 -> player.setRepeatMode(RepeatMode.LOOP_CURRENT_ONE);
+            case 3 -> player.setRepeatMode(RepeatMode.STOP_WHEN_QUEUE_END);
+            case 4 -> player.setRepeatMode(RepeatMode.LOOP_CURRENT_QUEUE);
+        }
+    }
+
     private void printMenu() {
         System.out.println("""
                 
-                1. Load Library
-                2. Show All Tracks
-                3. Show Songs
-                4. Play Track
-                5. Next
-                6. Previous
-                7. Stop
+                1. Show All Tracks
+                2. Show Songs
+                3. Play Track
+                4. Next
+                5. Previous
+                6. Stop
+                7. mode
                 0. Exit
                 """);
+    }
+    private void printModes(){
+        int i = 1;
+        for(RepeatMode mode : RepeatMode.values()){
+            System.out.println((i++) +". "+ mode.toString());
+        }
     }
 
     private void loadLibrary() {
         mediaService.loadActiveLibrary();
         System.out.println("✅ Loaded media");
         showTracks(mediaService.getTracks());
-        playerService.enqueueAll(mediaService.getTracks());
+        player.enqueueAll(mediaService.getTracks());
     }
 
     private void initializeLibrary() {
@@ -110,7 +131,7 @@ public class CliApp {
 
         for (int i = 0; i < tracks.size(); i++) {
             Track t = tracks.get(i);
-            System.out.printf("%d. %s (%ds)%n", i, t.getTitle(), t.getDurationInSeconds());
+            System.out.printf("%d. %s (%ds)%n", i, t.getMetadata().getTitle(), t.getMetadata().getDurationInSeconds());
         }
     }
 
@@ -128,23 +149,23 @@ public class CliApp {
 
         Track selected = tracks.get(index);
 
-        playerService.play(selected);
+        player.play(selected);
 
-        System.out.println("▶ Playing: " + selected.getTitle());
+        System.out.println("▶ Playing: " + selected.getMetadata().getTitle());
     }
 
     private void next() {
-        playerService.next();
-        System.out.println("⏭ Next track "+playerService.getCurrentTrack().getTitle());
+        player.playNext();
+        System.out.println("⏭ Next track "+ player.getCurrentTrack().getMetadata().getTitle());
     }
 
     private void previous() {
-        playerService.previous();
-        System.out.println("⏮ Previous track "+playerService.getCurrentTrack().getTitle());
+        player.playPrev();
+        System.out.println("⏮ Previous track "+ player.getCurrentTrack().getMetadata().getTitle());
     }
 
     private void stop() {
-        playerService.stop();
+        player.stop();
         System.out.println("⏹ Stopped");
     }
 }

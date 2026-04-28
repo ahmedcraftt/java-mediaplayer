@@ -1,20 +1,111 @@
 package entities;
 
+import java.time.Year;
+
 public class TrackMetadata { //not used yet
 
     private String genre;
     private String title;
     private int durationInSeconds;
     private byte[] coverArt;
-    private String year;
+    private Year year;
     private long bitrate;
     private int sampleRate;
     private String description;
+    private String artist;
+    private String album;
+    private String lyrics;
+    private int episodeNumber;
+    private String channel;
+    private String host;
+    private String author;
+    private String narrator;
+    private String series;
+    private int chapterCount;
 
     public TrackMetadata() {
 
     }
 
+    public String getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(String album) {
+        this.album = album;
+    }
+
+    public int getChapterCount() {
+        return chapterCount;
+    }
+
+    public void setChapterCount(int chapterCount) {
+        this.chapterCount = chapterCount;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
+    public int getEpisodeNumber() {
+        return episodeNumber;
+    }
+
+    public void setEpisodeNumber(int episodeNumber) {
+        this.episodeNumber = episodeNumber;
+    }
+
+    public String getLyrics() {
+        return lyrics;
+    }
+
+    public void setLyrics(String lyrics) {
+        this.lyrics = lyrics;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getNarrator() {
+        return narrator;
+    }
+
+    public void setNarrator(String narrator) {
+        this.narrator = narrator;
+    }
+
+    public String getSeries() {
+        return series;
+    }
+
+    public void setSeries(String series) {
+        this.series = series;
+    }
 
     public String getDescription() {
         return description;
@@ -56,11 +147,11 @@ public class TrackMetadata { //not used yet
         this.coverArt = coverArt;
     }
 
-    public String getYear() {
+    public Year getYear() {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(Year year) {
         this.year = year;
     }
 

@@ -1,11 +1,11 @@
 package ui.controllers;
 
-import application.PlayerService;
+import infrastructure.audio.AudioPlayer;
 
 public class CategoryViewController {
-    private PlayerService playerService;
+    private AudioPlayer player;
 
-    public void setPlayerService(PlayerService playerService) {
-        this.playerService = playerService;
+    public void setPlayer(AudioPlayer player) {
+        this.player = player;
     }
 }

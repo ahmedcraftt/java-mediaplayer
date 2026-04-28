@@ -56,19 +56,19 @@ public class MediaLibrary {
 
         return tracks.values().stream()
                 .filter(t ->
-                        safe(t.getTitle()).contains(q) ||
-                                safe(t.getGenre()).contains(q) ||
+                        safe(t.getMetadata().getTitle()).contains(q) ||
+                                safe(t.getMetadata().getGenre()).contains(q) ||
                                 safe(t.getFileName()).contains(q)
                 )
                 .collect(Collectors.toList());
     }
 
     public List<Track> sortByTitle() {
-        return sort(Comparator.comparing(t -> safe(t.getTitle())));
+        return sort(Comparator.comparing(t -> safe(t.getMetadata().getTitle())));
     }
 
     public List<Track> sortByDuration() {
-        return sort(Comparator.comparingInt(Track::getDurationInSeconds));
+        return sort(Comparator.comparingInt(track -> track.getMetadata().getDurationInSeconds()));
     }
 
     private List<Track> sort(Comparator<Track> comparator) {

@@ -47,7 +47,7 @@ public class Test {
 
                 case "play" -> {
                     Track track = playlist.get(currentIndex);
-                    System.out.println("▶ Playing: " + track.getTitle());
+                    System.out.println("▶ Playing: " + track.getMetadata().getTitle());
                     player.play(track);
                 }
 
@@ -69,7 +69,7 @@ public class Test {
                         }
                     }
 
-                    System.out.println("⏭ Next: " + playlist.get(currentIndex).getTitle());
+                    System.out.println("⏭ Next: " + playlist.get(currentIndex).getMetadata().getTitle());
                     player.play(playlist.get(currentIndex));
                 }
 
@@ -77,7 +77,7 @@ public class Test {
                     currentIndex--;
                     if (currentIndex < 0) currentIndex = 0;
 
-                    System.out.println("⏮ Previous: " + playlist.get(currentIndex).getTitle());
+                    System.out.println("⏮ Previous: " + playlist.get(currentIndex).getMetadata().getTitle());
                     player.play(playlist.get(currentIndex));
                 }
 
@@ -120,7 +120,6 @@ public class Test {
     private static Track makeTrack(String title) {
         Path path = Path.of("/home/Ahmed/test/CG5 - FNAF SL SONG ▶ ＂I Can't Fix You＂ (Remix⧸Cover feat. Chi-chi) [SFM] ｜ CG5.m4a");
         Track t = TrackFactory.createTrack(path, metaData);
-        t.setTitle(title);
         t.setFilePath(path);
         return t;
     }

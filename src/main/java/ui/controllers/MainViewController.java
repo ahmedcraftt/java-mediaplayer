@@ -1,9 +1,9 @@
 package ui.controllers;
 
 import application.MediaService;
-import application.PlayerService;
 import entities.Track;
 
+import infrastructure.audio.AudioPlayer;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -36,11 +36,11 @@ public class MainViewController {
     @FXML private AnchorPane contentArea ;
 
     private MediaService mediaService ;
-    private PlayerService playerService;
+    private AudioPlayer player;
     private MediaListViewController controller;
 
-    public void setPlayerService(PlayerService playerService) {
-        this.playerService = playerService;
+    public void setPlayer(AudioPlayer player) {
+        this.player = player;
     }
 
     public void setMediaService(MediaService mediaService) {
@@ -124,8 +124,8 @@ public class MainViewController {
 
             controller = loader.getController();
 
-            if (playerService != null) {
-                controller.setPlayerService(playerService);
+            if (player != null) {
+                controller.setPlayer(player);
             }
 
         } catch (IOException e) {
@@ -143,8 +143,8 @@ public class MainViewController {
 
             PlaylistViewController playlistController = loader.getController();
 
-            if (playerService != null) {
-                playlistController.setPlayerService(playerService);
+            if (player != null) {
+                playlistController.setPlayer(player);
             }
 
         } catch (IOException e) {
@@ -162,8 +162,8 @@ public class MainViewController {
 
             CategoryViewController categoryViewController = loader.getController();
 
-            if (playerService != null) {
-                categoryViewController.setPlayerService(playerService);
+            if (player != null) {
+                categoryViewController.setPlayer(player);
             }
         } catch (IOException e) {
             System.err.println("CRITICAL: Could not find or load categoryView.fxml");

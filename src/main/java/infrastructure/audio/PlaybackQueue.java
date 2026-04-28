@@ -8,10 +8,21 @@ public class PlaybackQueue {
     private final Deque<Track> trackQueue = new ArrayDeque<>();
     private final Deque<Track> history = new ArrayDeque<>();
     private final List<Track> originalOrder = new ArrayList<>();
-    private final Set<Track> trackSet = new HashSet<>();
+    private final Set<Track> trackSet = new HashSet<>(originalOrder);
     private Track currentTrack;
     private boolean shuffle = false;
     private boolean loopQueue = false;
+
+    public void printStatus(Track track){
+        String title = track.getMetadata().getTitle();
+        System.out.println("current track:"+title);
+        System.out.println("main queue:"+trackQueue);
+        System.out.println("history queue:"+history);
+        System.out.println("order list:"+originalOrder);
+        System.out.println("track set:"+trackSet);
+        System.out.println("shuffle:"+shuffle);
+        System.out.println("loop:"+loopQueue);
+    }
 
     public void add(Track track) {
         if (track == null) return;
@@ -39,7 +50,7 @@ public class PlaybackQueue {
     public Track next() {
         if (trackQueue.isEmpty()) {
             if (loopQueue) {
-                resetQueue(); // repopulate the queue from originalOrder
+                reset();
             } else {
                 return null;
             }
@@ -54,7 +65,8 @@ public class PlaybackQueue {
 
         return currentTrack;
     }
-    public Track previous() {
+
+    public Track prev() {
         if (!history.isEmpty()) {
             if (currentTrack != null) {
                 trackQueue.addFirst(currentTrack);
@@ -63,9 +75,6 @@ public class PlaybackQueue {
             return currentTrack;
         }
         return null;
-    }
-    public Track peekNext() {
-        return trackQueue.peek();
     }
 
     public boolean isEmpty(){
@@ -99,7 +108,7 @@ public class PlaybackQueue {
         if (shuffle == enable) return;
 
         shuffle = enable;
-        resetQueue();
+        reset();
     }
 
     public boolean isShuffleEnabled() {
@@ -122,7 +131,7 @@ public class PlaybackQueue {
         return loopQueue;
     }
 
-    private void resetQueue() {
+    public void reset() {
         Track oldCurrent = currentTrack;
 
         trackQueue.clear();

@@ -58,7 +58,7 @@ public class Playlist {
     }
 
     public int getTotalDurationSeconds() {
-        return tracks.stream().mapToInt(Track::getDurationInSeconds).sum();
+        return tracks.stream().mapToInt(t->t.getMetadata().getDurationInSeconds()).sum();
     }
 
     @Override

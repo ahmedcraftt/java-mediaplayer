@@ -1,8 +1,8 @@
 package ui.controllers;
 
-import application.PlayerService;
 import entities.Track;
 
+import infrastructure.audio.AudioPlayer;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -18,20 +18,11 @@ public class MediaListViewController {
     @FXML private MenuButton btnSort;
     @FXML private Button btnRefresh;
 
-    @FXML private Label lblTitle;
-    @FXML private Label lblArtist;
-    @FXML private Label lblGenre;
-    @FXML private Label lblDuration;
-    @FXML private Label lblYear;
-    @FXML private Label lblBitrate;
-    @FXML private Label lblSampleRate;
-    @FXML private Label lblFilePath;
-
     private List<Track> currentData;
-    private PlayerService playerService;
+    private AudioPlayer player;
 
-    public void setPlayerService(PlayerService playerService) {
-        this.playerService = playerService;
+    public void setPlayer(AudioPlayer player) {
+        this.player = player;
     }
 
     public void setData(List<Track> tracks) {
@@ -56,60 +47,23 @@ public class MediaListViewController {
         setupListView();
         setupSearch();
         setupPlay();
+        setupSort();
         setupRefresh();
-        setupSelection();
     }
 
     private void setupListView() {
         contentList.setCellFactory(lv -> new MyListCell());
     }
 
-    private void setupSelection() {
-        contentList.getSelectionModel().selectedItemProperty().addListener(
-                (obs, old, selected) -> {
-                    if (selected != null) {
-                        showMetadata(selected);
-                    } else {
-                        clearMetadata();
-                    }
-                }
-        );
-    }
-
-    private void showMetadata(Track t) {
-        lblTitle.setText("Title: " + safeText(t.getTitle()));
-        lblArtist.setText("Artist: " + safeText(t.getArtist()));
-        lblGenre.setText("Genre: " + safeText(t.getGenre()));
-
-        lblDuration.setText("Duration: " + formatDuration(t.getDurationInSeconds()));
-        lblYear.setText("Year: " + safeText(t.getYear()));
-
-        lblBitrate.setText("Bitrate: " + t.getBitrate());
-        lblSampleRate.setText("Sample Rate: " + t.getSampleRate());
-
-        lblFilePath.setText("Path: " + t.getFilePath());
-    }
-
-    private void clearMetadata() {
-        lblTitle.setText("");
-        lblArtist.setText("");
-        lblGenre.setText("");
-        lblDuration.setText("");
-        lblYear.setText("");
-        lblBitrate.setText("");
-        lblSampleRate.setText("");
-        lblFilePath.setText("");
-    }
-
     private void sort(SortByModes mode) {
         List<Track> items = new ArrayList<>(contentList.getItems());
 
         switch (mode) {
-            case TITLE -> items.sort(Comparator.comparing(Track::getTitle, String.CASE_INSENSITIVE_ORDER));
-            case FILE_NAME -> items.sort(Comparator.comparing(t -> t.getFilePath().getFileName().toString()));
-            case ARTISTS -> items.sort(Comparator.comparing(Track::getArtist, String.CASE_INSENSITIVE_ORDER));
-            case DURATION -> items.sort(Comparator.comparingInt(Track::getDurationInSeconds));
-            case YEAR -> items.sort(Comparator.comparing(Track::getYear));
+            case TITLE -> items.sort(Comparator.comparing(track -> track.getMetadata().getTitle(), String.CASE_INSENSITIVE_ORDER));
+            case FILE_NAME -> items.sort(Comparator.comparing(track -> track.getFilePath().getFileName().toString()));
+            case ARTISTS -> items.sort(Comparator.comparing(track -> track.getMetadata().getArtist(), String.CASE_INSENSITIVE_ORDER));
+            case DURATION -> items.sort(Comparator.comparingInt(track -> track.getMetadata().getDurationInSeconds()));
+            case YEAR -> items.sort(Comparator.comparing(track -> track.getMetadata().getYear()));
             case DATE_ADDED -> items.sort(Comparator.comparing(Track::getDateCreated));
             case DATE_MODIFIED -> items.sort(Comparator.comparing(t -> t.getFilePath().toFile().lastModified()));
         }
@@ -139,7 +93,7 @@ public class MediaListViewController {
             if (empty || item == null) {
                 setText(null);
             } else {
-                setText(item.getTitle());
+                setText(item.getMetadata().getTitle()); // upgrade later with artist etc.
             }
         }
     }
@@ -154,8 +108,8 @@ public class MediaListViewController {
                 contentList.getItems().setAll(
                         currentData.stream()
                                 .filter(t ->
-                                        safe(t.getTitle()).contains(q) ||
-                                                safe(t.getGenre()).contains(q)
+                                        safe(t.getMetadata().getTitle()).contains(q) ||
+                                                safe(t.getMetadata().getGenre()).contains(q)
                                 )
                                 .toList()
                 );
@@ -167,12 +121,19 @@ public class MediaListViewController {
         btnListPlay.setOnAction(e -> {
             Track selected = contentList.getSelectionModel().getSelectedItem();
 
-            if (selected != null && playerService != null) {
-                playerService.play(selected);
+            if (selected != null && player != null) {
+                player.play(selected);
             }
         });
     }
 
+    private void setupSort() {
+        btnSort.setOnAction(e -> contentList.getItems().setAll(
+                contentList.getItems().stream()
+                        .sorted(Comparator.comparing(t -> safe(t.getMetadata().getTitle())))
+                        .toList()
+        ));
+    }
 
     private void setupRefresh() {
         btnRefresh.setOnAction(e -> contentList.getItems().setAll(currentData));
@@ -180,15 +141,5 @@ public class MediaListViewController {
 
     private String safe(String s) {
         return s == null ? "" : s.toLowerCase();
-    }
-
-    private String formatDuration(int sec) {
-        int min = sec / 60;
-        int s = sec % 60;
-        return String.format("%d:%02d", min, s);
-    }
-
-    private String safeText(String value) {
-        return (value == null || value.trim().isEmpty()) ? "—" : value.trim();
     }
 }

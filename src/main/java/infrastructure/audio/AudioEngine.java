@@ -1,8 +1,10 @@
 package infrastructure.audio;
 
+import java.nio.file.Path;
+
 public interface AudioEngine {
 
-    void play(String path);
+    void play(Path path, Runnable onTrackFinished);
     void pause();
     void stop();
     void resume();

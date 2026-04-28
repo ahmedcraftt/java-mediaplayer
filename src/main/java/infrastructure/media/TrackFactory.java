@@ -1,9 +1,8 @@
 package infrastructure.media;
 
-import entities.AudioBook;
-import entities.Podcast;
-import entities.Song;
+import entities.MediaType;
 import entities.Track;
+import entities.TrackMetadata;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -38,8 +37,15 @@ public class TrackFactory {
         String title = normalize(metaData.getTitle(path)).trim();
         String trackNumber = metaData.getTrackNumber(path);
 
-        if (trackNumber != null || !trackNumber.isEmpty()|| !trackNumber.equalsIgnoreCase("unknown")){
+        TrackMetadata trackMetadata = new TrackMetadata();
+        trackMetadata.setDurationInSeconds(durationSeconds);
+        trackMetadata.setGenre(genre);
+        trackMetadata.setTitle(title);
+        //trackMetadata.setChapterCount(Integer.parseInt(trackNumber));
+
+        if (!trackNumber.equalsIgnoreCase("unknown") || !trackNumber.isEmpty()){
             abookScore+=2;
+            songScore-=2;
         }
 
         double songBoost = 0;
@@ -57,6 +63,7 @@ public class TrackFactory {
 
         if (durationSeconds >= 600 && durationSeconds <= 1800) {
             abookBoost += 6;
+            podcastScore -=1;
         } else if (durationSeconds <= 3600) {
             abookBoost += 4;
             podcastBoost += 1;
@@ -93,11 +100,10 @@ public class TrackFactory {
 
         int max = Math.max(songScore, Math.max(podcastScore, abookScore));
 
-        if (max<3) return new Song(filename,durationSeconds,path);
-
-        if (songScore>=max) return new Song(filename,durationSeconds,path);
-        if (podcastScore>=max) return new Podcast(filename,durationSeconds,path);
-        return new AudioBook(filename,durationSeconds,path);
+        if (max<3) return new Track(filename,trackMetadata,path, MediaType.SONG);
+        if (songScore>=max) return new Track(filename,trackMetadata,path,MediaType.SONG);
+        if (podcastScore>=max) return new Track(filename,trackMetadata,path,MediaType.PODCAST);
+        return new Track(filename,trackMetadata,path,MediaType.AUDIOBOOK);
 
     }
 

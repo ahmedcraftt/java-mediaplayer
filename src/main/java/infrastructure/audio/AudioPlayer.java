@@ -2,45 +2,81 @@ package infrastructure.audio;
 
 import entities.Track;
 
+import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class AudioPlayer {
     private Track currentTrack;
     private final PlaybackQueue queue = new PlaybackQueue();
-    private final AudioEngine engine = new VLCJAudioEngine(() -> {
-
-    });
+    private final AudioEngine engine = new VLCJAudioEngine();
     private PlaybackState state = PlaybackState.STOPPED;
     private RepeatMode repeatMode = RepeatMode.STOP_WHEN_QUEUE_END;
 
 
     public void play(Track track){
         if (track == null) return;
-        queue.getHistory().add(track);
-        queue.remove(track);
+        Path path = track.getFilePath();
         currentTrack = track;
-        engine.play(String.valueOf(track.getFilePath()));
+        engine.play(path,this::playNext);
         state = PlaybackState.PLAYING;
+        queue.printStatus(currentTrack);
     }
+
+    public void playNext() {
+        System.out.println("playing next");
+        switch (repeatMode) {
+            case LOOP_CURRENT_ONE -> {
+                System.out.println("looping "+ currentTrack.getMetadata().getTitle());
+                if (currentTrack != null) play(currentTrack);
+            }
+
+            case PLAY_ONE ->{
+                System.out.println("Stoping");
+                stop();
+            }
+
+            case STOP_WHEN_QUEUE_END -> {
+                Track nextTrack = queue.next();
+                System.out.println("playing "+ nextTrack.getMetadata().getTitle());
+                if (nextTrack != null) {
+                    play(nextTrack);
+                } else {
+                    stop();
+                }
+            }
+
+            case LOOP_CURRENT_QUEUE -> {
+                Track nextTrack = queue.next();
+                System.out.println("playing "+ nextTrack.getMetadata().getTitle());
+                if (nextTrack == null) {
+                    queue.reset();
+                    nextTrack = queue.next();
+                }
+
+                if (nextTrack != null) {
+                    play(nextTrack);
+                } else {
+                    stop(); // Only hits if the queue is physically empty
+                }
+            }
+        }
+    }
+
 
     public void enqueueAll(List<Track> tracks) {
         if (tracks == null || tracks.isEmpty()) return;
-        for (Track track : tracks) {
-            queue.add(track);
-        }
+        queue.addAll(tracks);
     }
 
     public void clearQueue(){
         queue.clear();
     }
 
-    public void playNext() {
-        playFromQueue(queue::next);
-    }
-
     public void playPrev(){
-        playFromQueue(queue::previous);
+        if (currentTrack != null) {
+            Track track = queue.prev();
+            play(track);
+        }
     }
 
     public void pause() {
@@ -62,13 +98,6 @@ public class AudioPlayer {
         if (state == PlaybackState.PAUSED && currentTrack != null && !engine.isPlaying()) {
             state = PlaybackState.PLAYING;
             engine.resume();
-        }
-    }
-
-    public void playFromQueue() {
-        Track next = queue.next();
-        if (next != null) {
-            play(next);
         }
     }
 
@@ -100,42 +129,4 @@ public class AudioPlayer {
     public boolean isShuffle() {
         return queue.isShuffleEnabled();
     }
-
-    private void playFromQueue(Supplier<Track> supplier) {
-        switch (repeatMode) {
-
-            case LOOP_CURRENT_ONE -> {
-                if (currentTrack != null) {
-                    engine.stop();
-                    play(currentTrack);
-                }
-            }
-
-            case STOP_WHEN_QUEUE_END, LOOP_CURRENT_QUEUE, PLAY_ONE -> {
-                Track track = supplier.get();
-
-                if (track == null) {
-                    stop();
-                    return;
-                }
-
-                play(track);
-            }
-        }
-    }
-
-    private synchronized void playNextSafe() {
-
-        Track track = queue.next();
-
-        if (track == null) {
-            stop();
-            return;
-        }
-
-        currentTrack = track;
-        engine.play(track.getFilePath().toString());
-        state = PlaybackState.PLAYING;
-    }
-
 }

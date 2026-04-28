@@ -1,33 +1,25 @@
 package entities;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.nio.file.Path;
 import java.time.LocalDate;
 
-public abstract class Track {
+public class Track {
 
     private MediaType type;
     private LocalDate dateCreated;
     private LocalDate dateModified;
     private long fileSize;
-    protected Path filePath;
-    protected String fileName;
-    protected boolean favorite;
-    protected String genre;
-    protected String title;
-    protected int durationInSeconds;
-    protected byte[] coverArt;
-    protected String year;
-    protected long bitrate;
-    protected int sampleRate;
-    protected String description;
+    private Path filePath;
+    private String fileName;
+    private boolean favorite;
+    private TrackMetadata metadata;
 
-    protected Track() {}
+    public Track() {}
 
-    protected Track(String fileName, int durationInSeconds, Path filePath) {
+    public Track(String fileName, TrackMetadata metadata, Path filePath,MediaType type) {
+        this.type=type;
         this.fileName=fileName;
-        this.durationInSeconds=durationInSeconds;
+        this.metadata=metadata;
         this.filePath = filePath;
     }
 
@@ -35,40 +27,8 @@ public abstract class Track {
         return favorite;
     }
 
-    public String getYear() {
-        return year;
-    }
-
-    public void setYear(String year) {
-        this.year = year;
-    }
-
-    public int getDurationInSeconds() {
-        return durationInSeconds;
-    }
-
-    public void setDurationInSeconds(int durationInSeconds) {
-        this.durationInSeconds = durationInSeconds;
-    }
-
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getGenre() {
-        return genre;
-    }
-
-    public void setGenre(String genre) {
-        this.genre = genre;
     }
 
     public LocalDate getDateCreated() {
@@ -87,44 +47,12 @@ public abstract class Track {
         this.dateModified = dateModified;
     }
 
-    public byte[] getCoverArt() {
-        return coverArt;
-    }
-
-    public void setCoverArt(byte[] coverArt) {
-        this.coverArt = coverArt;
-    }
-
     public long getFileSize() {
         return fileSize;
     }
 
     public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
-    }
-
-    public long getBitrate() {
-        return bitrate;
-    }
-
-    public void setBitrate(long bitrate) {
-        this.bitrate = bitrate;
-    }
-
-    public int getSampleRate() {
-        return sampleRate;
-    }
-
-    public void setSampleRate(int sampleRate) {
-        this.sampleRate = sampleRate;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public Path getFilePath() {
@@ -151,7 +79,16 @@ public abstract class Track {
         this.type = type;
     }
 
-    public @NotNull String getArtist() {
-      return "";
+    public TrackMetadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(TrackMetadata metadata) {
+        this.metadata = metadata;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s (%ds)%n", getMetadata().getTitle(), getMetadata().getDurationInSeconds());
     }
 }

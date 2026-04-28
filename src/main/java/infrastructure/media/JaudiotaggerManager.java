@@ -1,10 +1,9 @@
 package infrastructure.media;
 
-import entities.AudioBook;
-import entities.Podcast;
-import entities.Song;
+import entities.MediaType;
 import entities.Track;
 
+import entities.TrackMetadata;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.audio.AudioFile;
@@ -22,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.ZoneId;
 
 public class JaudiotaggerManager implements MetaDataManager {
@@ -31,25 +31,26 @@ public class JaudiotaggerManager implements MetaDataManager {
             File file = new File(track.getFilePath().toUri());
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTagOrCreateAndSetDefault();
+            TrackMetadata metadata = track.getMetadata();
 
-            safeSet(tag,FieldKey.TITLE, track.getTitle());
-            safeSet(tag,FieldKey.GENRE,track.getGenre());
-            safeSet(tag,FieldKey.YEAR,track.getYear());
-            safeSet(tag,FieldKey.COMMENT,track.getDescription());
-            if (track instanceof Song song){
-                safeSet(tag,FieldKey.ARTIST,song.getArtist());
-                safeSet(tag,FieldKey.ALBUM,song.getAlbum());
-                safeSet(tag,FieldKey.LYRICS,song.getLyrics());
+            safeSet(tag,FieldKey.TITLE, metadata.getTitle());
+            safeSet(tag,FieldKey.GENRE,metadata.getGenre());
+            safeSet(tag,FieldKey.YEAR, String.valueOf(metadata.getYear()));
+            safeSet(tag,FieldKey.COMMENT,metadata.getDescription());
+            if (track.getType()== MediaType.SONG){
+                safeSet(tag,FieldKey.ARTIST,metadata.getArtist());
+                safeSet(tag,FieldKey.ALBUM,metadata.getAlbum());
+                safeSet(tag,FieldKey.LYRICS,metadata.getLyrics());
             }
-            if (track instanceof Podcast podcast){
-                safeSet(tag,FieldKey.ARTIST,podcast.getArtist());
-                safeSet(tag,FieldKey.ALBUM,podcast.getChannel());
-                safeSet(tag,FieldKey.TRACK, String.valueOf(podcast.getEpisodeNumber()));
+            if (track.getType()== MediaType.PODCAST){
+                safeSet(tag,FieldKey.ARTIST,metadata.getArtist());
+                safeSet(tag,FieldKey.ALBUM,metadata.getChannel());
+                safeSet(tag,FieldKey.TRACK, String.valueOf(metadata.getEpisodeNumber()));
             }
-            if (track instanceof AudioBook book){
-                safeSet(tag,FieldKey.ARTIST,book.getNarrator());
-                safeSet(tag,FieldKey.ALBUM,book.getSeries());
-                safeSet(tag,FieldKey.ALBUM_ARTIST, book.getAuthor());
+            if (track.getType()==MediaType.AUDIOBOOK){
+                safeSet(tag,FieldKey.ARTIST,metadata.getNarrator());
+                safeSet(tag,FieldKey.ALBUM,metadata.getSeries());
+                safeSet(tag,FieldKey.ALBUM_ARTIST,metadata.getAuthor());
             }
             audioFile.commit();
         } catch (Exception e){
@@ -61,6 +62,7 @@ public class JaudiotaggerManager implements MetaDataManager {
     public void readMetadata(Track track) {
 
         try {
+            TrackMetadata metadata = track.getMetadata();
 
             File file = new File(track.getFilePath().toUri());
             Path path = Path.of(track.getFilePath().toUri());
@@ -76,10 +78,10 @@ public class JaudiotaggerManager implements MetaDataManager {
                 if(title == null || title.isBlank() || title.equalsIgnoreCase("unknown")) {
                     title = file.getName();
                 }
-                track.setTitle(title.trim());
-                track.setGenre(tag.getFirst(FieldKey.GENRE));
-                track.setYear(tag.getFirst(FieldKey.YEAR));
-                track.setDurationInSeconds(header.getTrackLength());
+                metadata.setTitle(title.trim());
+                metadata.setGenre(tag.getFirst(FieldKey.GENRE));
+                metadata.setYear(Year.parse(tag.getFirst(FieldKey.YEAR)));
+                metadata.setDurationInSeconds(header.getTrackLength());
 
                 Integer br = null;
                 try {
@@ -87,36 +89,36 @@ public class JaudiotaggerManager implements MetaDataManager {
                 } catch (Exception ignored) {}
 
                 if (br != null) {
-                    track.setBitrate(br);
+                    metadata.setBitrate(br);
                 }
 
                 int sr = header.getSampleRateAsNumber();
-                track.setSampleRate(sr);
+                metadata.setSampleRate(sr);
 
                 org.jaudiotagger.tag.images.Artwork artwork = tag.getFirstArtwork();
                 if (artwork != null && artwork.getBinaryData() != null) {
-                    track.setCoverArt(artwork.getBinaryData());
+                    metadata.setCoverArt(artwork.getBinaryData());
                 }
                 track.setFileSize(attributes.size());
-                track.setSampleRate(header.getSampleRateAsNumber());
+                metadata.setSampleRate(header.getSampleRateAsNumber());
                 track.setDateCreated(toLocalDate(attributes.creationTime()));
                 track.setDateModified(toLocalDate(attributes.lastModifiedTime()));
-                track.setDescription(tag.getFirst(FieldKey.COMMENT));
-                if (track instanceof Song song){
-                    song.setArtist(tag.getFirst(FieldKey.ARTIST));
-                    song.setAlbum(tag.getFirst(FieldKey.ALBUM));
-                    song.setLyrics(tag.getFirst(FieldKey.LYRICS));
+                metadata.setDescription(tag.getFirst(FieldKey.COMMENT));
+                if (track.getType()== MediaType.SONG){
+                    metadata.setArtist(tag.getFirst(FieldKey.ARTIST));
+                    metadata.setAlbum(tag.getFirst(FieldKey.ALBUM));
+                    metadata.setLyrics(tag.getFirst(FieldKey.LYRICS));
                 }
-                if (track instanceof Podcast podcast){
-                    podcast.setChannel(tag.getFirst(FieldKey.ALBUM));
-                    podcast.setHost(tag.getFirst(FieldKey.ARTIST));
-                    podcast.setEpisodeNumber(safeParseInt(tag.getFirst(FieldKey.TRACK)));
+                if (track.getType()== MediaType.PODCAST){
+                    metadata.setChannel(tag.getFirst(FieldKey.ALBUM));
+                    metadata.setHost(tag.getFirst(FieldKey.ARTIST));
+                    metadata.setEpisodeNumber(safeParseInt(tag.getFirst(FieldKey.TRACK)));
                 }
-                if (track instanceof AudioBook book){
-                    book.setAuthor(tag.getFirst(FieldKey.ALBUM_ARTIST));
-                    book.setNarrator(tag.getFirst(FieldKey.ARTIST));
-                    book.setSeries(tag.getFirst(FieldKey.ALBUM));
-                    book.setChapterCount(safeParseInt(tag.getFirst(FieldKey.TRACK)));
+                if (track.getType()==MediaType.AUDIOBOOK){
+                    metadata.setAuthor(tag.getFirst(FieldKey.ALBUM_ARTIST));
+                    metadata.setNarrator(tag.getFirst(FieldKey.ARTIST));
+                    metadata.setSeries(tag.getFirst(FieldKey.ALBUM));
+                    metadata.setChapterCount(safeParseInt(tag.getFirst(FieldKey.TRACK)));
                 }
             }
 

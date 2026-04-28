@@ -40,3 +40,4 @@ build/
 # Build
 target/out/
 *.jar
+natives

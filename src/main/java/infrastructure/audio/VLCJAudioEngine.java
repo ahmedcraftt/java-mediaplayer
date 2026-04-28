@@ -4,25 +4,45 @@ import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
+import java.nio.file.Path;
+
 public class VLCJAudioEngine implements AudioEngine {
     private final MediaPlayer mediaPlayer;
     private final MediaPlayerFactory factory;
+    private Runnable currentOnFinished;
 
-    public VLCJAudioEngine(Runnable onTrackFinished) {
-
+    public VLCJAudioEngine() {
         factory = new MediaPlayerFactory();
         mediaPlayer = factory.mediaPlayers().newMediaPlayer();
 
         mediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
             @Override
             public void finished(MediaPlayer mediaPlayer) {
-                onTrackFinished.run();
+                System.out.println("FINISHED EVENT FIRED");
+                if (currentOnFinished != null) {
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(50);
+                            currentOnFinished.run();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                }
             }
         });
+
     }
 
-    public void play(String path) {
-        mediaPlayer.media().play(path);
+    public void play(Path path, Runnable onTrackFinished) {
+        this.currentOnFinished = onTrackFinished;
+        mediaPlayer.media().play(path.toAbsolutePath().toString());
+    }
+
+    // Remember to release resources!
+    public void dispose() {
+        mediaPlayer.release();
+        factory.release();
     }
 
     public void pause() {
@@ -53,8 +73,13 @@ public class VLCJAudioEngine implements AudioEngine {
         mediaPlayer.controls().setPosition(position); // 0.0 to 1.0
     }
 
+    public void setRepeat(boolean repeat){
+        mediaPlayer.media().setRepeat(repeat);
+    }
     public void release() {
         mediaPlayer.release();
         factory.release();
     }
+
+
 }

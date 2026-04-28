@@ -11,7 +11,7 @@ public class VlcConfig {
         String basePath = switch (os) {
             case WINDOWS -> "natives/windows";
             case LINUX -> "natives/linux";
-            case MAC -> "natives/mac";
+            case MAC -> "natives/mac"; //not supported yet
             default -> throw new RuntimeException("Unsupported OS for VLC");
         };
 
