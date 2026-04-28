@@ -13,15 +13,15 @@ public class PlaybackQueue {
     private boolean shuffle = false;
     private boolean loopQueue = false;
 
-    public void printStatus(Track track){
-        String title = track.getMetadata().getTitle();
-        System.out.println("current track:"+title);
+    public void printStatus(){
         System.out.println("main queue:"+trackQueue);
         System.out.println("history queue:"+history);
         System.out.println("order list:"+originalOrder);
         System.out.println("track set:"+trackSet);
         System.out.println("shuffle:"+shuffle);
         System.out.println("loop:"+loopQueue);
+        String current =(currentTrack!=null)?currentTrack.getMetadata().getTitle():"none";
+        System.out.println("Current track:" + current);
     }
 
     public void add(Track track) {

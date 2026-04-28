@@ -12,14 +12,13 @@ public class AudioPlayer {
     private PlaybackState state = PlaybackState.STOPPED;
     private RepeatMode repeatMode = RepeatMode.STOP_WHEN_QUEUE_END;
 
-
     public void play(Track track){
         if (track == null) return;
         Path path = track.getFilePath();
         currentTrack = track;
         engine.play(path,this::playNext);
         state = PlaybackState.PLAYING;
-        queue.printStatus(currentTrack);
+        queue.printStatus();
     }
 
     public void playNext() {

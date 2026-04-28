@@ -23,6 +23,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 
 public class JaudiotaggerManager implements MetaDataManager {
 
@@ -80,7 +81,7 @@ public class JaudiotaggerManager implements MetaDataManager {
                 }
                 metadata.setTitle(title.trim());
                 metadata.setGenre(tag.getFirst(FieldKey.GENRE));
-                metadata.setYear(Year.parse(tag.getFirst(FieldKey.YEAR)));
+                metadata.setYear(safeParseYear(tag.getFirst(FieldKey.YEAR)));
                 metadata.setDurationInSeconds(header.getTrackLength());
 
                 Integer br = null;
@@ -173,6 +174,16 @@ public class JaudiotaggerManager implements MetaDataManager {
             return (value == null || value.isBlank()) ? 0 : Integer.parseInt(value);
         } catch (NumberFormatException e) {
             return 0;
+        }
+    }
+
+    private static Year safeParseYear(String yearStr) {
+        if (yearStr == null || yearStr.isBlank()) return null;
+
+        try {
+            return Year.parse(yearStr);
+        } catch (DateTimeParseException e) {
+            return null;
         }
     }
 

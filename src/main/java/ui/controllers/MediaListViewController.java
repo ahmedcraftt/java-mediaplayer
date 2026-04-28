@@ -20,9 +20,14 @@ public class MediaListViewController {
 
     private List<Track> currentData;
     private AudioPlayer player;
+    private PlayerService playerService;
 
     public void setPlayer(AudioPlayer player) {
         this.player = player;
+    }
+
+    public void setPlayerService(PlayerService playerService) {
+        this.playerService = playerService;
     }
 
     public void setData(List<Track> tracks) {
@@ -53,6 +58,12 @@ public class MediaListViewController {
 
     private void setupListView() {
         contentList.setCellFactory(lv -> new MyListCell());
+        contentList.setOnMouseClicked(e -> {
+            Track selected = contentList.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                playerService.setCurrentTrack(selected);
+            }
+        });
     }
 
     private void sort(SortByModes mode) {
@@ -119,11 +130,12 @@ public class MediaListViewController {
 
     private void setupPlay() {
         btnListPlay.setOnAction(e -> {
-            Track selected = contentList.getSelectionModel().getSelectedItem();
+            Track selected = contentList.getItems().getFirst();
 
             if (selected != null && player != null) {
                 player.play(selected);
             }
+
         });
     }
 

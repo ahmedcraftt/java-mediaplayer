@@ -96,7 +96,7 @@ public class CliApp {
 
     private void initializeLibrary() {
 
-        if (!libraryService.hasLibraries()) {
+        if (!libraryService.hasLibraries()||!libraryService.hasActiveLibrary()) {
 
             System.out.println("⚠ No libraries found.");
             System.out.println("Please create your first library.");

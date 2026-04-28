@@ -1,21 +1,26 @@
 package ui.controllers;
 
+import application.LibraryService;
 import application.MediaService;
 import entities.Track;
 
 import infrastructure.audio.AudioPlayer;
+import infrastructure.audio.RepeatMode;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import mediaLibrary.Library;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class MainViewController {
 
@@ -33,18 +38,35 @@ public class MainViewController {
     @FXML private Button btnArtists;
     @FXML private Button btnGenres;
 
+    @FXML private Label currentTrack;
+
+    @FXML private Slider volumeSlider;
+
     @FXML private AnchorPane contentArea ;
 
     private MediaService mediaService ;
     private AudioPlayer player;
+    private PlayerService playerService;
+    private LibraryService libraryService;
+
     private MediaListViewController controller;
+
+    public void setPlayerService(PlayerService playerService) {
+        this.playerService = playerService;
+    }
 
     public void setPlayer(AudioPlayer player) {
         this.player = player;
+        System.out.println(player.getRepeatMode());
     }
 
     public void setMediaService(MediaService mediaService) {
         this.mediaService = mediaService;
+    }
+
+    public void setLibraryService(LibraryService libraryService) {
+        this.libraryService = libraryService;
+        initializeLibrary();
     }
 
     @FXML
@@ -53,6 +75,7 @@ public class MainViewController {
         setButtonsEnabled(true);
 
         Task<Void> task = getVoidTask();
+
         btnTracks.setOnAction(e ->
                 switchView(new ArrayList<>(mediaService.getTracks()),ViewMode.TRACKS));
 
@@ -71,10 +94,26 @@ public class MainViewController {
 
         btnGenres.setOnAction(event -> loadCategoryView());
 
+        btnPlay.setOnAction(event -> {
+                    player.play(playerService.getCurrentTrack());
+                    setupLabel(playerService.getCurrentTrack());
+                }
+        );
+
+        btnNext.setOnAction(event -> player.playNext());
+
+        btnPrev.setOnAction(event -> player.playPrev());
 
         Thread thread = new Thread(task);
         thread.setDaemon(true);
         thread.start();
+    }
+
+   public void setupLabel(Track track){
+        if (track!=null){
+            currentTrack.setText(track.getMetadata().getTitle());
+        }
+        currentTrack.setText("---");
     }
 
     @NotNull
@@ -83,6 +122,7 @@ public class MainViewController {
             @Override
             protected Void call() {
                 mediaService.loadActiveLibrary();
+                player.enqueueAll(mediaService.getTracks());
                 return null;
             }
         };
@@ -126,6 +166,9 @@ public class MainViewController {
 
             if (player != null) {
                 controller.setPlayer(player);
+            }
+            if (playerService != null){
+                controller.setPlayerService(playerService);
             }
 
         } catch (IOException e) {
@@ -189,5 +232,50 @@ public class MainViewController {
         AnchorPane.setRightAnchor(view, 0.0);
 
         return loader;
+    }
+    private void initializeLibrary() {
+
+        if (!libraryService.hasLibraries() || !libraryService.hasActiveLibrary()) {
+
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Libraries Found");
+            alert.setHeaderText("No music libraries available");
+            alert.setContentText("Please create your first library.");
+            alert.showAndWait();
+
+            TextInputDialog pathDialog = new TextInputDialog();
+            pathDialog.setTitle("Library Setup");
+            pathDialog.setHeaderText("Enter Music Folder Path");
+            Optional<String> pathResult = pathDialog.showAndWait();
+
+            if (pathResult.isEmpty()) return;
+
+            TextInputDialog nameDialog = new TextInputDialog();
+            nameDialog.setTitle("Library Setup");
+            nameDialog.setHeaderText("Enter Library Name");
+            Optional<String> nameResult = nameDialog.showAndWait();
+
+            if (nameResult.isEmpty()) return;
+
+            String path = pathResult.get();
+            String name = nameResult.get();
+
+            Library lib = new Library(name, Path.of(path), true);
+
+            libraryService.addLibrary(lib);
+            libraryService.setActiveLibrary(lib);
+
+            mediaService.loadActiveLibrary();
+            return;
+        }
+
+        if (!libraryService.hasActiveLibrary()) {
+            libraryService.setActiveLibrary(
+                    libraryService.getLibraries().getFirst()
+            );
+        }
+
+        mediaService.loadActiveLibrary();
+
     }
 }
